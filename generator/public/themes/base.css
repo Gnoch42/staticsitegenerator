@@ -1,0 +1,119 @@
+/* ─────────────────────────────────────────────────────────────
+   base.css — structure commune à tous les templates + bascule FR/EN.
+   Les thèmes ne redéfinissent que des variables et quelques détails.
+   Inclus AVANT le CSS du thème, en preview comme sur le site publié.
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  --bg: #ffffff;
+  --fg: #1a1a1a;
+  --muted: #6b7280;
+  --accent: #2563eb;
+  --border: #e5e7eb;
+  --surface: #f9fafb;
+  --maxw: 900px;
+  --gap: 1.5rem;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-head: var(--font-body);
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  line-height: 1.55;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; height: auto; }
+
+/* ── Bascule de langue : n'affiche que la langue active ── */
+[data-lang] { display: none; }
+.site-root[data-active-lang="fr"] [data-lang="fr"],
+.site-root[data-active-lang="en"] [data-lang="en"],
+.site-root[data-active-lang="es"] [data-lang="es"],
+.site-root[data-active-lang="de"] [data-lang="de"] { display: contents; }
+
+/* ── En-tête / navigation ── */
+.site-root { min-height: 100vh; }
+.site-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--gap); flex-wrap: wrap;
+  max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+.site-nav { display: flex; gap: 1rem; flex-wrap: wrap; }
+.nav-link { color: var(--fg); font-weight: 500; padding: .25rem 0; }
+.nav-link.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+.site-tools { display: flex; align-items: center; gap: .75rem; }
+.lang-switch { display: inline-flex; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.lang-btn {
+  border: 0; background: transparent; padding: .3rem .6rem; cursor: pointer;
+  font: inherit; font-size: .8rem; color: var(--muted);
+}
+.lang-btn[aria-pressed="true"] { background: var(--accent); color: #fff; }
+.pdf-btn {
+  border: 1px solid var(--accent); color: var(--accent);
+  padding: .3rem .7rem; border-radius: var(--radius); font-size: .85rem;
+}
+.pdf-btn:hover { background: var(--accent); color: #fff; text-decoration: none; }
+
+/* ── Grille de page ── */
+.page { max-width: var(--maxw); margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+.sec { margin-bottom: 2rem; }
+.sec-title {
+  font-family: var(--font-head); font-size: 1.1rem; text-transform: uppercase;
+  letter-spacing: .04em; color: var(--accent); margin: 0 0 .75rem;
+  padding-bottom: .25rem; border-bottom: 1px solid var(--border);
+}
+
+/* ── Coordonnées ── */
+.contact-list { list-style: none; margin: 0; padding: 0; }
+.contact-item { margin-bottom: .4rem; }
+.contact-label { color: var(--muted); font-size: .85rem; margin-right: .4rem; }
+
+/* ── Timeline (expériences, etc.) ── */
+.timeline { list-style: none; margin: 0; padding: 0; }
+.timeline-item { margin-bottom: 1.25rem; }
+.ti-head { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; }
+.ti-title { font-size: 1rem; margin: 0; }
+.ti-dates { color: var(--muted); font-size: .85rem; white-space: nowrap; }
+.ti-meta { color: var(--muted); font-size: .9rem; margin: .1rem 0; }
+.ti-desc { margin: .35rem 0 0; }
+
+/* ── Compétences ── */
+.skills-list { list-style: none; margin: 0; padding: 0; }
+.skill-item { margin-bottom: .3rem; }
+.skill-cat { font-weight: 600; }
+
+/* ── Loisirs (tags) ── */
+.tag-list { list-style: none; display: flex; flex-wrap: wrap; gap: .5rem; margin: 0; padding: 0; }
+.tag { background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: .2rem .7rem; font-size: .85rem; }
+
+/* ── Texte / résumé ── */
+.text-block { margin-bottom: 1rem; }
+.block-heading { font-size: 1rem; margin: 0 0 .3rem; }
+.block-text { margin: 0; }
+
+/* ── Vidéo ── */
+.video-figure { margin: 0 0 1.5rem; }
+.video-frame { position: relative; width: 100%; padding-top: 56.25%; border-radius: var(--radius); overflow: hidden; background: #000; }
+.video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video-figure figcaption { color: var(--muted); font-size: .9rem; margin-top: .5rem; }
+
+/* ── Publications ── */
+.pub-list { margin: 0; padding-left: 1.25rem; }
+.pub-item { margin-bottom: 1.25rem; }
+.pub-head { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; }
+.pub-title { font-size: 1rem; margin: 0; }
+.pub-year { color: var(--muted); font-size: .85rem; }
+.pub-authors { font-size: .9rem; }
+.pub-venue { font-size: .9rem; color: var(--muted); }
+.pub-abstract { margin: .4rem 0 0; font-size: .95rem; }
+
+@media (max-width: 600px) {
+  .ti-head, .pub-head { flex-direction: column; gap: .1rem; }
+}

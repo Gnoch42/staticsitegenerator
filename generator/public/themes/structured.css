@@ -1,0 +1,32 @@
+/* Template structuré / corporate : mise en page en deux colonnes (CV). */
+.theme-structured {
+  --accent: #1d4ed8;
+  --maxw: 1000px;
+  --surface: #f3f4f6;
+}
+.theme-structured .site-header {
+  background: var(--surface);
+  border-bottom: 2px solid var(--accent);
+}
+
+/* Disposition du wireframe : sidebar gauche + colonne principale droite. */
+.theme-structured .two-col {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+.theme-structured .col-sidebar {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  position: sticky;
+  top: 1rem;
+}
+.theme-structured .col-sidebar .sec-title { font-size: .95rem; }
+.theme-structured .col-main .sec-title { border-bottom-width: 2px; }
+
+@media (max-width: 760px) {
+  .theme-structured .two-col { grid-template-columns: 1fr; }
+  .theme-structured .col-sidebar { position: static; }
+}

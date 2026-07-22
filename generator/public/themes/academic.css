@@ -1,0 +1,26 @@
+/* Template académique : sérif, sobre, publications mises en valeur. */
+.theme-academic {
+  --accent: #7c2d12;
+  --maxw: 780px;
+  --font-body: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-head: var(--font-body);
+}
+.theme-academic .sec-title {
+  text-transform: none; letter-spacing: 0;
+  font-variant: small-caps; font-size: 1.25rem;
+  color: var(--fg); border-bottom: 1px solid var(--fg);
+}
+.theme-academic .nav-link.active { border-bottom-color: var(--accent); color: var(--accent); }
+
+/* Emphase sur la page Publications. */
+.theme-academic .page-research .pub-list { padding-left: 0; list-style: none; counter-reset: pub; }
+.theme-academic .page-research .pub-item {
+  counter-increment: pub; position: relative; padding-left: 2.25rem;
+  margin-bottom: 1.75rem;
+}
+.theme-academic .page-research .pub-item::before {
+  content: "[" counter(pub) "]";
+  position: absolute; left: 0; top: 0; color: var(--accent); font-weight: 600;
+}
+.theme-academic .pub-title { font-size: 1.05rem; }
+.theme-academic .pub-abstract { text-align: justify; }

@@ -1,0 +1,23 @@
+# dependencies
+node_modules/
+generator/node_modules/
+
+# next.js
+generator/.next/
+generator/out/
+generator/next-env.d.ts
+
+# local data volume (SQLite + generated static site)
+generator/data/
+data/
+
+# env
+.env
+.env.local
+
+# build / misc
+*.log
+.DS_Store
+
+# playwright browsers cache (installed in Docker image)
+/ms-playwright/

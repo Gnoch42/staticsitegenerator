@@ -1,0 +1,23 @@
+/* CSS d'impression dédié pour le rendu PDF du CV (Playwright).
+   Mise en page A4, marges propres, aucun élément de nav/UI. */
+@page {
+  size: A4;
+  margin: 16mm 14mm;
+}
+
+@media print {
+  .site-header { display: none !important; }
+  .pdf-btn, .lang-switch, .site-nav { display: none !important; }
+
+  body { background: #fff; color: #000; font-size: 10.5pt; }
+  .page { max-width: none; margin: 0; padding: 0; }
+
+  /* En PDF on fige une seule langue (voir ?lang= dans la route pdf). */
+  a { color: #000; text-decoration: none; }
+
+  .sec { break-inside: avoid; margin-bottom: 1.1rem; }
+  .timeline-item, .pub-item { break-inside: avoid; }
+
+  /* Le template structuré reste en deux colonnes à l'impression. */
+  .theme-structured .col-sidebar { background: transparent; padding: 0; }
+}

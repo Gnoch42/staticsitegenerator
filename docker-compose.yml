@@ -1,0 +1,52 @@
+# ─────────────────────────────────────────────────────────────
+#  Générateur de site CV — deux services, un volume partagé.
+#
+#  Utilisable en local (`docker compose up`) ET comme référence
+#  pour configurer deux ressources séparées dans Coolify.
+#
+#  Contraintes Coolify respectées :
+#   - un seul port interne exposé par service (pas de `ports:`)
+#   - le routing HTTP est géré par Traefik via labels Coolify
+#   - chaque Dockerfile est autonome / buildable indépendamment
+# ─────────────────────────────────────────────────────────────
+
+services:
+  # ── SERVICE 1 : app d'édition + génération (Start/Stop à la demande) ──
+  cv-generator:
+    build:
+      context: ./generator
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH}
+      SESSION_SECRET: ${SESSION_SECRET}
+      DATA_DIR: ${DATA_DIR:-/data}
+      DATABASE_PATH: ${DATABASE_PATH:-/data/cv.db}
+      SITE_OUTPUT_DIR: ${SITE_OUTPUT_DIR:-/data/site}
+      PORT: ${PORT:-3000}
+      INTERNAL_BASE_URL: ${INTERNAL_BASE_URL:-http://127.0.0.1:3000}
+      NODE_ENV: production
+    volumes:
+      - shared-data:/data
+    expose:
+      - "3000"
+    # En local uniquement, décommentez pour accéder à l'admin :
+    # ports:
+    #   - "3000:3000"
+
+  # ── SERVICE 2 : serveur statique Caddy (toujours actif) ──
+  cv-site:
+    build:
+      context: ./site
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - shared-data:/data:ro
+    expose:
+      - "80"
+    # En local uniquement, décommentez pour visiter le site publié :
+    # ports:
+    #   - "8080:80"
+
+volumes:
+  shared-data:

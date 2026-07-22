@@ -1,0 +1,16 @@
+/* Template minimaliste : sobre, typographique, beaucoup de blanc. */
+.theme-minimal {
+  --accent: #111111;
+  --maxw: 720px;
+  --border: #ececec;
+  --font-body: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.theme-minimal .site-header { border-bottom: none; padding-top: 2.5rem; }
+.theme-minimal .nav-link { font-weight: 400; color: var(--muted); }
+.theme-minimal .nav-link.active { color: var(--fg); border-bottom-color: var(--fg); }
+.theme-minimal .sec-title {
+  text-transform: none; letter-spacing: 0; color: var(--muted);
+  font-weight: 600; font-size: .8rem; border-bottom: none;
+}
+.theme-minimal .page { padding-top: 1rem; }
+.theme-minimal .sec { margin-bottom: 2.75rem; }
