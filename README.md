@@ -52,8 +52,17 @@ npm run dev
 - Aperçu live : http://localhost:3000/preview
 - Après « Publier », le site statique est écrit dans `generator/data/site/`.
 
+> **Alternative** : mettre ces variables dans `generator/.env.local` (chargé
+> automatiquement). ⚠️ Dans un fichier `.env`, **échappez chaque `$` du hash
+> bcrypt en `\$`** (sinon Next corrompt le hash et la connexion échoue) —
+> ex. `ADMIN_PASSWORD_HASH=\$2b\$12\$...`. Avec `export` en shell entre quotes
+> simples (ci-dessus), pas d'échappement nécessaire.
+
 > L'export **PDF** nécessite les navigateurs Playwright :
 > `npx playwright install chromium` (une seule fois).
+
+> **Reset local complet** : `lsof -ti :3000 | xargs kill -9` puis, dans
+> `generator/`, `rm -rf .next data` et `npm run dev` (repart d'une base neuve).
 
 ### Option B — Docker Compose (proche de la prod)
 ```bash
