@@ -2,8 +2,8 @@ import { SectionRenderer } from "@/components/render/SectionRenderer";
 import { SiteHeader } from "@/components/render/SiteHeader";
 import type { TemplateProps } from "../types";
 
-/** Template minimaliste : une seule colonne centrée, beaucoup de blanc. */
-export default function MinimalTemplate({
+/** Template moderne : accent coloré, en-tête large, une colonne aérée. */
+export default function ModernTemplate({
   page,
   nav,
   langs,
@@ -15,9 +15,15 @@ export default function MinimalTemplate({
 }: TemplateProps) {
   const ctx = { langs, mode };
   return (
-    <div className="site-root theme-minimal" data-active-lang={activeLang}>
-      <SiteHeader nav={nav} langs={langs} ownerName={ownerName} showPdf={showPdf} pdfHref={pdfHref} />
-      <main className="page page-minimal">
+    <div className="site-root theme-modern" data-active-lang={activeLang}>
+      <SiteHeader
+        nav={nav}
+        langs={langs}
+        ownerName={ownerName}
+        showPdf={showPdf}
+        pdfHref={pdfHref}
+      />
+      <main className={`page page-modern page-${page.type}`}>
         {page.sections.map((s) => (
           <SectionRenderer key={s.id} section={s} ctx={ctx} />
         ))}

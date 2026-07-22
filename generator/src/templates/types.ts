@@ -8,6 +8,10 @@ export interface TemplateProps {
   nav: NavLink[];
   langs: string[];
   activeLang: string;
+  /** Mode de rendu : site en ligne ou version imprimée (PDF). */
+  mode: "online" | "print";
+  /** Nom affiché en en-tête (site + CV). */
+  ownerName?: string | null;
   showPdf?: boolean;
   pdfHref?: string;
 }

@@ -1,5 +1,11 @@
 import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
-import type { Multilingual, ItemData, SectionType, PageType } from "@/lib/types";
+import type {
+  Multilingual,
+  ItemData,
+  SectionType,
+  PageType,
+  Visibility,
+} from "@/lib/types";
 
 // ── templates : données de seed, non éditables par l'utilisateur ──
 export const templates = sqliteTable("templates", {
@@ -16,6 +22,7 @@ export const site = sqliteTable("site", {
     .references(() => templates.id),
   languages: text("languages", { mode: "json" }).$type<string[]>().notNull(),
   defaultLanguage: text("default_language").notNull(),
+  ownerName: text("owner_name"),
   publishedAt: integer("published_at", { mode: "timestamp" }),
 });
 
@@ -38,6 +45,7 @@ export const sections = sqliteTable("sections", {
   enabled: integer("enabled", { mode: "boolean" }).notNull().default(true),
   position: integer("position").notNull().default(0),
   title: text("title", { mode: "json" }).$type<Multilingual>(),
+  visibility: text("visibility").$type<Visibility>().notNull().default("both"),
 });
 
 // ── items : entrées d'une section (data JSON libre selon le type) ──
@@ -48,6 +56,7 @@ export const items = sqliteTable("items", {
     .references(() => sections.id, { onDelete: "cascade" }),
   position: integer("position").notNull().default(0),
   data: text("data", { mode: "json" }).$type<ItemData>().notNull(),
+  visibility: text("visibility").$type<Visibility>().notNull().default("both"),
 });
 
 // ── Types inférés ──

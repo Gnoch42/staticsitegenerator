@@ -1,0 +1,34 @@
+/* Template « slate » : sidebar sombre à gauche, contenu clair à droite. */
+.theme-slate {
+  --accent: #0f766e;
+  --maxw: 1000px;
+  --border: #e2e8f0;
+  --surface: #0f172a;
+}
+.theme-slate .site-header { border-bottom: 2px solid var(--accent); }
+
+.theme-slate .two-col {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 0;
+  align-items: stretch;
+}
+.theme-slate .col-sidebar {
+  background: var(--surface);
+  color: #e2e8f0;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+}
+.theme-slate .col-sidebar .sec-title { color: #5eead4; border-bottom-color: #1e293b; }
+.theme-slate .col-sidebar a { color: #7dd3fc; }
+.theme-slate .col-sidebar .contact-label,
+.theme-slate .col-sidebar .muted,
+.theme-slate .col-sidebar .tag { color: #94a3b8; }
+.theme-slate .col-sidebar .tag { background: #1e293b; border-color: #334155; }
+.theme-slate .col-main { padding: 0 0 0 2rem; }
+.theme-slate .sec-title { color: var(--accent); text-transform: none; letter-spacing: 0; }
+
+@media (max-width: 760px) {
+  .theme-slate .two-col { grid-template-columns: 1fr; }
+  .theme-slate .col-main { padding: 1.5rem 0 0; }
+}

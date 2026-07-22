@@ -33,6 +33,7 @@ export async function renderCvPdf(lang?: string): Promise<Uint8Array> {
       linkFor: () => "#",
       activeLang: onlyLang,
       onlyLang,
+      mode: "print",
       showPdf: false,
     }),
   );

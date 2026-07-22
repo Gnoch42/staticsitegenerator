@@ -68,6 +68,7 @@ export function PageEditor({
           type: newType,
           enabled: true,
           title: { ...SECTION_LABELS[newType] },
+          visibility: "both",
           items: [],
         },
       ]);

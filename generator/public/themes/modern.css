@@ -1,0 +1,28 @@
+/* Template moderne : accent vif, en-tête coloré, colonne aérée. */
+.theme-modern {
+  --accent: #7c3aed;
+  --maxw: 820px;
+  --border: #ece9f5;
+  --surface: #f6f3fe;
+  --font-body: "Inter", system-ui, -apple-system, sans-serif;
+}
+.theme-modern .site-header {
+  background: linear-gradient(120deg, var(--accent), #ec4899);
+  border-bottom: none;
+  border-radius: 0 0 16px 16px;
+  max-width: none;
+  padding: 1.1rem 1.5rem;
+}
+.theme-modern .site-brand,
+.theme-modern .nav-link { color: #fff; }
+.theme-modern .nav-link { opacity: .85; font-weight: 600; }
+.theme-modern .nav-link.active { opacity: 1; border-bottom-color: #fff; }
+.theme-modern .lang-btn { color: #fff; }
+.theme-modern .lang-switch { border-color: rgba(255,255,255,.5); }
+.theme-modern .pdf-btn { border-color: #fff; color: #fff; }
+.theme-modern .pdf-btn:hover { background: #fff; color: var(--accent); }
+.theme-modern .sec-title {
+  color: var(--accent); text-transform: none; letter-spacing: 0;
+  font-weight: 700; font-size: 1.15rem; border-bottom: 2px solid var(--surface);
+}
+.theme-modern .tag { background: var(--surface); border-color: var(--surface); color: var(--accent); }

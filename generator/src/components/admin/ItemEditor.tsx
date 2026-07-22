@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import type { SectionType } from "@/lib/types";
+import type { SectionType, Visibility } from "@/lib/types";
 import { LANG_NAMES } from "@/lib/i18n";
 import { MULTILINGUAL_FIELDS, FLAT_FIELDS } from "@/lib/itemDefaults";
 import { translateAction } from "@/app/admin/actions";
 import type { EditorItem } from "./editorTypes";
+import { VisibilitySelect } from "./VisibilitySelect";
+import { ImageUpload } from "./ImageUpload";
 
 const FIELD_LABELS: Record<string, string> = {
   title: "Titre",
@@ -40,6 +42,7 @@ export function ItemEditor({
   onChange,
   onDelete,
   onMove,
+  onVisibilityChange,
 }: {
   sectionType: SectionType;
   item: EditorItem;
@@ -49,6 +52,7 @@ export function ItemEditor({
   onChange: (data: Record<string, unknown>) => void;
   onDelete: () => void;
   onMove: (dir: -1 | 1) => void;
+  onVisibilityChange: (v: Visibility) => void;
 }) {
   const [data, setData] = useState<Record<string, unknown>>(item.data);
   const [translating, startTranslate] = useTransition();
@@ -126,12 +130,18 @@ export function ItemEditor({
   const flatFields = FLAT_FIELDS[sectionType] ?? [];
   const isContact = sectionType === "contact" || sectionType === "contact_links";
   const isVideo = sectionType === "video_embed";
+  const isPortfolio = sectionType === "portfolio_gallery";
 
   return (
     <div className="item-block">
       <div className="card-head" style={{ marginBottom: ".5rem" }}>
         <span className="muted">Item {index + 1}</span>
         <div className="toolbar">
+          <VisibilitySelect
+            value={item.visibility}
+            onChange={onVisibilityChange}
+            title="Visibilité de l'item (en ligne / PDF)"
+          />
           {langs.length > 1 && (
             <button className="btn btn-sm" onClick={translateItem} disabled={translating}>
               {translating ? "…" : "Traduire"}
@@ -152,6 +162,38 @@ export function ItemEditor({
           </button>
         </div>
       </div>
+
+      {/* Portfolio : image + légende */}
+      {isPortfolio && (
+        <>
+          <ImageUpload
+            value={flat("image")}
+            onChange={(url) => {
+              const next = { ...data, image: url };
+              commit(next);
+              persist(next);
+            }}
+          />
+          <div className="row">
+            <div>
+              <label>Texte alternatif (accessibilité)</label>
+              <input value={flat("alt")} onChange={(e) => setFlat("alt", e.target.value)} onBlur={() => persist(data)} />
+            </div>
+            <div>
+              <label>Lien (optionnel)</label>
+              <input value={flat("link")} onChange={(e) => setFlat("link", e.target.value)} onBlur={() => persist(data)} placeholder="https://…" />
+            </div>
+          </div>
+          <div className="lang-cols">
+            {langs.map((lang) => (
+              <div key={lang} className="lang-col">
+                <span className="lang-tag">Légende — {LANG_NAMES[lang] ?? lang}</span>
+                <input value={multi("caption", lang)} onChange={(e) => setMulti("caption", lang, e.target.value)} onBlur={() => persist(data)} />
+              </div>
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Contact / liens de contact */}
       {isContact && (

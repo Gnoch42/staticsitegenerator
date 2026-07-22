@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import type { Multilingual } from "@/lib/types";
+import type { Multilingual, Visibility } from "@/lib/types";
 import { LANG_NAMES } from "@/lib/i18n";
 import { defaultItemData } from "@/lib/itemDefaults";
 import {
@@ -13,9 +13,11 @@ import {
   updateItem,
   deleteItem,
   reorderItems,
+  setItemVisibility,
 } from "@/app/admin/actions";
 import type { EditorSection } from "./editorTypes";
 import { ItemEditor } from "./ItemEditor";
+import { VisibilitySelect } from "./VisibilitySelect";
 
 export function SectionCard({
   section,
@@ -53,6 +55,20 @@ export function SectionCard({
     updateSection(section.id, { enabled });
   }
 
+  function changeVisibility(visibility: Visibility) {
+    onPatch({ visibility });
+    updateSection(section.id, { visibility });
+  }
+
+  function changeItemVisibility(itemId: number, visibility: Visibility) {
+    onPatch({
+      items: section.items.map((it) =>
+        it.id === itemId ? { ...it, visibility } : it,
+      ),
+    });
+    setItemVisibility(itemId, visibility);
+  }
+
   async function handleDelete() {
     if (!confirm("Supprimer cette section et tous ses items ?")) return;
     await deleteSection(section.id);
@@ -62,7 +78,7 @@ export function SectionCard({
   async function handleAddItem() {
     const { id } = await addItem(section.id, section.type, langs);
     const data = defaultItemData(section.type, langs);
-    onPatch({ items: [...section.items, { id, data }] });
+    onPatch({ items: [...section.items, { id, data, visibility: "both" }] });
   }
 
   function handleItemChange(itemId: number, data: Record<string, unknown>) {
@@ -106,6 +122,11 @@ export function SectionCard({
           <span className="muted">({section.type})</span>
         </div>
         <div className="toolbar">
+          <VisibilitySelect
+            value={section.visibility}
+            onChange={changeVisibility}
+            title="Visibilité de la section (en ligne / PDF)"
+          />
           <label style={{ display: "flex", gap: ".35rem", alignItems: "center", margin: 0 }}>
             <input
               type="checkbox"
@@ -148,6 +169,7 @@ export function SectionCard({
                 onChange={(data) => handleItemChange(item.id, data)}
                 onDelete={() => handleItemDelete(item.id)}
                 onMove={(dir) => moveItem(i, dir)}
+                onVisibilityChange={(v) => changeItemVisibility(item.id, v)}
               />
             ))}
           </div>

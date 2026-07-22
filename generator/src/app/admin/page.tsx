@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { requireAuth } from "@/lib/auth";
 import { getFullSite } from "@/lib/queries";
 import { PAGE_LABELS, t } from "@/lib/i18n";
@@ -6,6 +5,8 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { TemplateSelector } from "@/components/admin/TemplateSelector";
 import { LanguageSettings } from "@/components/admin/LanguageSettings";
 import { PublishBar } from "@/components/admin/PublishBar";
+import { OwnerNameField } from "@/components/admin/OwnerNameField";
+import { PageToggles } from "@/components/admin/PageToggles";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,13 @@ export default async function AdminHome() {
       <PublishBar
         publishedAt={full.site.publishedAt?.toISOString() ?? null}
       />
+
+      <div className="card">
+        <div className="card-head">
+          <span className="card-title">Nom / identité</span>
+        </div>
+        <OwnerNameField initial={full.site.ownerName ?? ""} />
+      </div>
 
       <div className="card">
         <div className="card-head">
@@ -44,26 +52,17 @@ export default async function AdminHome() {
 
       <div className="card">
         <div className="card-head">
-          <span className="card-title">Pages</span>
+          <span className="card-title">Pages / onglets</span>
         </div>
-        <p className="muted">Cliquez pour éditer le contenu de chaque page.</p>
-        <div className="template-grid">
-          {full.pages.map((p) => (
-            <Link
-              key={p.id}
-              href={`/admin/${p.type}`}
-              className="template-option"
-            >
-              <div className="card-title">
-                {t(PAGE_LABELS[p.type], full.site.defaultLanguage)}
-              </div>
-              <div className="muted">
-                {p.sections.length} section(s) ·{" "}
-                {p.enabled ? "activée" : "désactivée"}
-              </div>
-            </Link>
-          ))}
-        </div>
+        <PageToggles
+          pages={full.pages.map((p) => ({
+            id: p.id,
+            type: p.type,
+            label: t(PAGE_LABELS[p.type], full.site.defaultLanguage),
+            enabled: p.enabled,
+            sectionCount: p.sections.length,
+          }))}
+        />
       </div>
     </AdminShell>
   );

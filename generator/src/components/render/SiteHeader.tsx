@@ -12,16 +12,19 @@ export interface NavLink {
 export function SiteHeader({
   nav,
   langs,
+  ownerName,
   showPdf,
   pdfHref,
 }: {
   nav: NavLink[];
   langs: string[];
+  ownerName?: string | null;
   showPdf?: boolean;
   pdfHref?: string;
 }) {
   return (
     <header className="site-header">
+      {ownerName ? <div className="site-brand">{ownerName}</div> : null}
       <nav className="site-nav">
         {nav.map((n) => (
           <a

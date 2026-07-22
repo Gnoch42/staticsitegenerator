@@ -9,7 +9,7 @@ import { PageEditor } from "@/components/admin/PageEditor";
 
 export const dynamic = "force-dynamic";
 
-const VALID: PageType[] = ["cv", "video", "research", "contact"];
+const VALID: PageType[] = ["cv", "video", "research", "portfolio", "contact"];
 
 export default async function EditPage({
   params,
@@ -53,7 +53,12 @@ export default async function EditPage({
           type: s.type,
           enabled: s.enabled,
           title: s.title ?? {},
-          items: s.items.map((it) => ({ id: it.id, data: it.data })),
+          visibility: s.visibility ?? "both",
+          items: s.items.map((it) => ({
+            id: it.id,
+            data: it.data,
+            visibility: it.visibility ?? "both",
+          })),
         }))}
         langs={full.site.languages}
         defaultLang={full.site.defaultLanguage}

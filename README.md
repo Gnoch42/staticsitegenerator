@@ -118,14 +118,30 @@ Contenu multilingue stocké en **JSON par item** (pas de duplication de table).
 Schéma : [`generator/src/db/schema.ts`](generator/src/db/schema.ts) ·
 seed & bootstrap : [`generator/src/db/init.ts`](generator/src/db/init.ts).
 
+## Fonctionnalités
+- **Onglets activables** : chaque page (CV, Vidéo, Publications, Portfolio,
+  Contact) se désactive depuis Réglages → retirée du site publié.
+- **Nom en en-tête** : affiché sur le site et le CV (Réglages → Nom / identité).
+- **Portfolio** : galerie d'images commentées, par **URL** ou **upload** de
+  fichiers (stockés dans le volume, servis par Caddy après publication).
+- **Visibilité en ligne / imprimé** : chaque section et chaque item du CV peut
+  être affiché « en ligne + PDF », « en ligne seulement » ou « PDF seulement ».
+
 ## Templates
-Trois thèmes qui consomment le **même** modèle de données, sans logique métier
+Cinq thèmes qui consomment le **même** modèle de données, sans logique métier
 propre (toute la différence est dans le rendu + CSS) :
 - **minimal** — sobre, typographique
 - **structured** — deux colonnes (implémente le wireframe de référence du CV)
 - **academic** — sérif, met en valeur les publications
+- **modern** — en-tête coloré, accent vif
+- **slate** — sidebar sombre à gauche, contenu clair à droite
 
 Composants : `generator/src/templates/*` · styles : `generator/public/themes/*.css`.
+
+## Portfolio & images uploadées
+Les images téléversées sont stockées dans le volume (`<DATA_DIR>/uploads`,
+surchargeable via `UPLOADS_DIR`), servies à `/uploads/<fichier>` pendant
+l'édition, puis **copiées dans le site publié** à la publication (Caddy les sert).
 
 ## Traduction automatique
 Point d'extension isolé : [`generator/src/lib/translate.ts`](generator/src/lib/translate.ts)

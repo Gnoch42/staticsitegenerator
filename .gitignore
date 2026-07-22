@@ -21,3 +21,7 @@ data/
 
 # playwright browsers cache (installed in Docker image)
 /ms-playwright/
+
+# TS incremental build info
+*.tsbuildinfo
+generator/tsconfig.tsbuildinfo

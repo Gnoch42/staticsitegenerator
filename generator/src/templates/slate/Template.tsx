@@ -3,12 +3,8 @@ import { SiteHeader } from "@/components/render/SiteHeader";
 import { SIDEBAR_SECTIONS } from "@/lib/types";
 import type { TemplateProps } from "../types";
 
-/**
- * Template structuré / corporate — implémente le wireframe de référence :
- * sidebar gauche (sections courtes) + colonne principale droite pour la
- * page CV. Les autres pages utilisent une seule colonne.
- */
-export default function StructuredTemplate({
+/** Template « slate » : sidebar sombre à gauche, colonne claire à droite (CV). */
+export default function SlateTemplate({
   page,
   nav,
   langs,
@@ -20,19 +16,20 @@ export default function StructuredTemplate({
 }: TemplateProps) {
   const ctx = { langs, mode };
   const isCv = page.type === "cv";
-
-  const sidebar = page.sections.filter((s) =>
-    SIDEBAR_SECTIONS.includes(s.type),
-  );
-  const main = page.sections.filter(
-    (s) => !SIDEBAR_SECTIONS.includes(s.type),
-  );
+  const sidebar = page.sections.filter((s) => SIDEBAR_SECTIONS.includes(s.type));
+  const main = page.sections.filter((s) => !SIDEBAR_SECTIONS.includes(s.type));
 
   return (
-    <div className="site-root theme-structured" data-active-lang={activeLang}>
-      <SiteHeader nav={nav} langs={langs} ownerName={ownerName} showPdf={showPdf} pdfHref={pdfHref} />
+    <div className="site-root theme-slate" data-active-lang={activeLang}>
+      <SiteHeader
+        nav={nav}
+        langs={langs}
+        ownerName={ownerName}
+        showPdf={showPdf}
+        pdfHref={pdfHref}
+      />
       {isCv ? (
-        <main className="page page-structured two-col">
+        <main className="page page-slate two-col">
           <aside className="col-sidebar">
             {sidebar.map((s) => (
               <SectionRenderer key={s.id} section={s} ctx={ctx} />
@@ -45,7 +42,7 @@ export default function StructuredTemplate({
           </div>
         </main>
       ) : (
-        <main className="page page-structured">
+        <main className={`page page-slate page-${page.type}`}>
           {page.sections.map((s) => (
             <SectionRenderer key={s.id} section={s} ctx={ctx} />
           ))}

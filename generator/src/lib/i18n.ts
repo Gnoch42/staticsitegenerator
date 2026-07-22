@@ -4,6 +4,7 @@ export const PAGE_LABELS: Record<string, Multilingual> = {
   cv: { fr: "CV", en: "CV" },
   video: { fr: "Vidéo", en: "Video" },
   research: { fr: "Publications", en: "Publications" },
+  portfolio: { fr: "Portfolio", en: "Portfolio" },
   contact: { fr: "Contact", en: "Contact" },
 };
 

@@ -11,13 +11,15 @@ export default function AcademicTemplate({
   nav,
   langs,
   activeLang,
+  mode,
+  ownerName,
   showPdf,
   pdfHref,
 }: TemplateProps) {
-  const ctx = { langs };
+  const ctx = { langs, mode };
   return (
     <div className="site-root theme-academic" data-active-lang={activeLang}>
-      <SiteHeader nav={nav} langs={langs} showPdf={showPdf} pdfHref={pdfHref} />
+      <SiteHeader nav={nav} langs={langs} ownerName={ownerName} showPdf={showPdf} pdfHref={pdfHref} />
       <main className={`page page-academic page-${page.type}`}>
         {page.sections.map((s) => (
           <SectionRenderer key={s.id} section={s} ctx={ctx} />

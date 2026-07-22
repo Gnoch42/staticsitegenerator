@@ -7,6 +7,7 @@ import { site } from "@/db/schema";
 import { getFullSite } from "./queries";
 import { getTemplate } from "@/templates";
 import { renderPageDocument } from "./render";
+import { uploadsDir } from "./paths";
 
 const OUT_DIR = process.env.SITE_OUTPUT_DIR ?? "./data/site";
 const THEMES_DIR = join(process.cwd(), "public", "themes");
@@ -34,6 +35,13 @@ export async function publishSite(): Promise<PublishResult> {
   const { css } = getTemplate(full.site.templateId);
   for (const file of ["base.css", "print.css", css]) {
     await fs.copyFile(join(THEMES_DIR, file), join(assetsDir, file));
+  }
+
+  // Copie des images uploadées (portfolio) vers /data/site/uploads,
+  // pour que Caddy les serve directement à /uploads/<fichier>.
+  const srcUploads = uploadsDir();
+  if (await exists(srcUploads)) {
+    await fs.cp(srcUploads, join(OUT_DIR, "uploads"), { recursive: true });
   }
 
   const enabledPages = full.pages.filter((p) => p.enabled);
@@ -64,6 +72,15 @@ export async function publishSite(): Promise<PublishResult> {
   db.update(site).set({ publishedAt }).where(eq(site.id, 1)).run();
 
   return { pages: written, outputDir: OUT_DIR, publishedAt };
+}
+
+async function exists(path: string): Promise<boolean> {
+  try {
+    await fs.access(path);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function redirectHtml(to: string): string {

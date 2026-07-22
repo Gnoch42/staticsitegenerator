@@ -1,9 +1,11 @@
 import type { SectionWithItems } from "@/lib/queries";
 import type { Multilingual } from "@/lib/types";
+import { isVisibleIn } from "@/lib/types";
 import { I18n, pickField, hasContent } from "./I18n";
 
 interface Ctx {
   langs: string[];
+  mode: "online" | "print";
 }
 
 export function SectionRenderer({
@@ -13,8 +15,15 @@ export function SectionRenderer({
   section: SectionWithItems;
   ctx: Ctx;
 }) {
-  // Section masquée ou vide : rien à rendre.
-  if (!section.enabled || section.items.length === 0) return null;
+  // Section masquée, ou non visible dans ce mode (en ligne / imprimé).
+  if (!section.enabled || !isVisibleIn(section.visibility, ctx.mode)) return null;
+
+  // Filtre les items selon leur propre visibilité pour ce mode.
+  const visibleItems = section.items.filter((it) =>
+    isVisibleIn(it.visibility, ctx.mode),
+  );
+  if (visibleItems.length === 0) return null;
+  section = { ...section, items: visibleItems };
 
   return (
     <section className={`sec sec-${section.type}`} data-type={section.type}>
@@ -49,9 +58,47 @@ function renderBody(section: SectionWithItems, ctx: Ctx) {
       return <VideoEmbeds section={section} ctx={ctx} />;
     case "publication_list":
       return <PublicationList section={section} ctx={ctx} />;
+    case "portfolio_gallery":
+      return <PortfolioGallery section={section} ctx={ctx} />;
     default:
       return null;
   }
+}
+
+// ── Portfolio : images commentées ──
+function PortfolioGallery({ section, ctx }: { section: SectionWithItems; ctx: Ctx }) {
+  return (
+    <div className="gallery">
+      {section.items.map((item) => {
+        const d = item.data as {
+          image?: string;
+          alt?: string;
+          link?: string;
+          caption?: Multilingual;
+        };
+        if (!d.image) return null;
+        const img = (
+          <img className="gallery-img" src={d.image} alt={d.alt ?? ""} loading="lazy" />
+        );
+        return (
+          <figure key={item.id} className="gallery-item">
+            {d.link ? (
+              <a href={d.link} target="_blank" rel="noreferrer">
+                {img}
+              </a>
+            ) : (
+              img
+            )}
+            {d.caption && hasContent(d.caption) && (
+              <figcaption className="gallery-caption">
+                <I18n field={d.caption} langs={ctx.langs} />
+              </figcaption>
+            )}
+          </figure>
+        );
+      })}
+    </div>
+  );
 }
 
 // ── Coordonnées / liens de contact ──

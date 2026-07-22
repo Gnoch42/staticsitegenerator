@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { eq, sql } from "drizzle-orm";
 import { db } from "@/db/client";
-import { site, sections, items } from "@/db/schema";
+import { site, pages, sections, items } from "@/db/schema";
 import {
   verifyPassword,
   createSession,
@@ -12,7 +12,7 @@ import {
   isAuthenticated,
 } from "@/lib/auth";
 import { isSectionAllowed } from "@/lib/types";
-import type { SectionType, Multilingual, ItemData } from "@/lib/types";
+import type { SectionType, Multilingual, ItemData, Visibility } from "@/lib/types";
 import { defaultItemData } from "@/lib/itemDefaults";
 import { publishSite } from "@/lib/publish";
 import { translateContent } from "@/lib/translate";
@@ -57,6 +57,22 @@ export async function setLanguages(languages: string[], defaultLanguage: string)
   revalidatePath("/admin", "layout");
 }
 
+export async function setOwnerName(ownerName: string) {
+  await guard();
+  db.update(site)
+    .set({ ownerName: ownerName.trim() || null })
+    .where(eq(site.id, 1))
+    .run();
+  revalidatePath("/admin", "layout");
+}
+
+// ── Pages : activer / désactiver un onglet ──
+export async function setPageEnabled(pageId: number, enabled: boolean) {
+  await guard();
+  db.update(pages).set({ enabled }).where(eq(pages.id, pageId)).run();
+  revalidatePath("/admin", "layout");
+}
+
 // ── Sections ──
 export async function addSection(
   pageId: number,
@@ -82,7 +98,7 @@ export async function addSection(
 
 export async function updateSection(
   id: number,
-  patch: { enabled?: boolean; title?: Multilingual },
+  patch: { enabled?: boolean; title?: Multilingual; visibility?: Visibility },
 ) {
   await guard();
   db.update(sections).set(patch).where(eq(sections.id, id)).run();
@@ -128,6 +144,12 @@ export async function addItem(sectionId: number, type: SectionType, langs: strin
 export async function updateItem(id: number, data: ItemData) {
   await guard();
   db.update(items).set({ data }).where(eq(items.id, id)).run();
+  revalidatePath("/admin", "layout");
+}
+
+export async function setItemVisibility(id: number, visibility: Visibility) {
+  await guard();
+  db.update(items).set({ visibility }).where(eq(items.id, id)).run();
   revalidatePath("/admin", "layout");
 }
 

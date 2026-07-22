@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS site (
   template_id      TEXT NOT NULL REFERENCES templates(id),
   languages        TEXT NOT NULL,
   default_language TEXT NOT NULL,
+  owner_name       TEXT,
   published_at     INTEGER
 );
 
@@ -34,19 +35,21 @@ CREATE TABLE IF NOT EXISTS pages (
 );
 
 CREATE TABLE IF NOT EXISTS sections (
-  id       INTEGER PRIMARY KEY AUTOINCREMENT,
-  page_id  INTEGER NOT NULL REFERENCES pages(id) ON DELETE CASCADE,
-  type     TEXT NOT NULL,
-  enabled  INTEGER NOT NULL DEFAULT 1,
-  position INTEGER NOT NULL DEFAULT 0,
-  title    TEXT
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  page_id    INTEGER NOT NULL REFERENCES pages(id) ON DELETE CASCADE,
+  type       TEXT NOT NULL,
+  enabled    INTEGER NOT NULL DEFAULT 1,
+  position   INTEGER NOT NULL DEFAULT 0,
+  title      TEXT,
+  visibility TEXT NOT NULL DEFAULT 'both'
 );
 
 CREATE TABLE IF NOT EXISTS items (
   id         INTEGER PRIMARY KEY AUTOINCREMENT,
   section_id INTEGER NOT NULL REFERENCES sections(id) ON DELETE CASCADE,
   position   INTEGER NOT NULL DEFAULT 0,
-  data       TEXT NOT NULL
+  data       TEXT NOT NULL,
+  visibility TEXT NOT NULL DEFAULT 'both'
 );
 
 CREATE INDEX IF NOT EXISTS idx_sections_page ON sections(page_id);
@@ -55,7 +58,50 @@ CREATE INDEX IF NOT EXISTS idx_items_section ON items(section_id);
 
 export function bootstrapDatabase(conn: BetterSqlite3.Database): void {
   conn.exec(SCHEMA_SQL);
+  migrate(conn);
   seed(conn);
+}
+
+// ── Migration idempotente pour les bases déjà existantes ──
+// (ALTER TABLE ADD COLUMN n'a pas de "IF NOT EXISTS" en SQLite)
+function migrate(conn: BetterSqlite3.Database): void {
+  const hasColumn = (table: string, column: string): boolean => {
+    const cols = conn
+      .prepare(`PRAGMA table_info(${table})`)
+      .all() as { name: string }[];
+    return cols.some((c) => c.name === column);
+  };
+  const addColumn = (table: string, column: string, ddl: string) => {
+    if (!hasColumn(table, column)) {
+      conn.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${ddl}`);
+    }
+  };
+
+  addColumn("site", "owner_name", "TEXT");
+  addColumn("sections", "visibility", "TEXT NOT NULL DEFAULT 'both'");
+  addColumn("items", "visibility", "TEXT NOT NULL DEFAULT 'both'");
+
+  // Ajoute la page portfolio si une base existante ne l'a pas encore.
+  const site = conn.prepare(`SELECT 1 FROM site WHERE id = 1`).get();
+  const portfolio = conn
+    .prepare(`SELECT 1 FROM pages WHERE type = 'portfolio'`)
+    .get();
+  if (site && !portfolio) {
+    const maxPos = conn
+      .prepare(`SELECT COALESCE(MAX(position), -1) AS m FROM pages`)
+      .get() as { m: number };
+    const res = conn
+      .prepare(
+        `INSERT INTO pages (type, slug, enabled, position) VALUES ('portfolio', 'portfolio', 1, ?)`,
+      )
+      .run(maxPos.m + 1);
+    conn
+      .prepare(
+        `INSERT INTO sections (page_id, type, enabled, position, title, visibility)
+         VALUES (?, 'portfolio_gallery', 1, 0, ?, 'both')`,
+      )
+      .run(res.lastInsertRowid as number, JSON.stringify({ fr: "Portfolio", en: "Portfolio" }));
+  }
 }
 
 // ── Seed : templates (toujours à jour) + contenu de départ (si vide) ──
@@ -118,6 +164,8 @@ const TEMPLATES = [
   { id: "minimal", name: "Minimaliste", previewUrl: "/themes/minimal.png" },
   { id: "structured", name: "Structuré", previewUrl: "/themes/structured.png" },
   { id: "academic", name: "Académique", previewUrl: "/themes/academic.png" },
+  { id: "modern", name: "Moderne", previewUrl: "/themes/modern.png" },
+  { id: "slate", name: "Slate", previewUrl: "/themes/slate.png" },
 ];
 
 const DEFAULT_PAGES = [
@@ -215,9 +263,21 @@ const DEFAULT_PAGES = [
     ],
   },
   {
+    type: "portfolio",
+    slug: "portfolio",
+    position: 3,
+    sections: [
+      {
+        type: "portfolio_gallery",
+        title: { fr: "Portfolio", en: "Portfolio" },
+        items: [],
+      },
+    ],
+  },
+  {
     type: "contact",
     slug: "contact",
-    position: 3,
+    position: 4,
     sections: [
       {
         type: "contact_links",

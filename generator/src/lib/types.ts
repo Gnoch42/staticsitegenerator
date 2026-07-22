@@ -7,7 +7,19 @@
 /** Champ multilingue : { "fr": "…", "en": "…" }. */
 export type Multilingual = Record<string, string>;
 
-export type PageType = "cv" | "video" | "research" | "contact";
+export type PageType = "cv" | "video" | "research" | "portfolio" | "contact";
+
+/** Visibilité d'une section/d'un item selon le support de rendu. */
+export type Visibility = "both" | "online" | "print";
+
+/** Un élément avec cette visibilité doit-il apparaître dans ce mode de rendu ? */
+export function isVisibleIn(
+  visibility: Visibility | null | undefined,
+  mode: "online" | "print",
+): boolean {
+  const v = visibility ?? "both";
+  return v === "both" || v === mode;
+}
 
 export type SectionType =
   // page cv
@@ -24,6 +36,8 @@ export type SectionType =
   | "video_embed"
   // page research
   | "publication_list"
+  // page portfolio
+  | "portfolio_gallery"
   // page contact
   | "contact_links";
 
@@ -42,6 +56,7 @@ export const SECTIONS_BY_PAGE: Record<PageType, SectionType[]> = {
   ],
   video: ["video_embed"],
   research: ["publication_list"],
+  portfolio: ["portfolio_gallery"],
   contact: ["contact_links"],
 };
 
@@ -103,6 +118,7 @@ export const SECTION_LABELS: Record<SectionType, Multilingual> = {
   custom: { fr: "Section personnalisée", en: "Custom section" },
   video_embed: { fr: "Vidéo", en: "Video" },
   publication_list: { fr: "Publications", en: "Publications" },
+  portfolio_gallery: { fr: "Galerie", en: "Gallery" },
   contact_links: { fr: "Liens de contact", en: "Contact links" },
 };
 

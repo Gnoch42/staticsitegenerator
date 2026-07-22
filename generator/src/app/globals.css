@@ -81,6 +81,14 @@ label { display: block; font-size: .8rem; color: var(--admin-muted); margin: .5r
 .lang-tag { font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: var(--admin-muted); }
 
 .item-block { border: 1px solid var(--admin-border); border-radius: 8px; padding: .75rem; margin-bottom: .6rem; background: #fcfcfd; }
+.image-upload { margin-bottom: .6rem; }
+.image-preview { margin-bottom: .5rem; }
+.image-preview img {
+  max-height: 140px; border-radius: 8px; border: 1px solid var(--admin-border);
+  display: block; object-fit: cover;
+}
+.vis-select { color: var(--admin-muted); }
+
 .notice { padding: .6rem .8rem; border-radius: 8px; font-size: .85rem; margin-bottom: 1rem; }
 .notice-ok { background: #ecfdf5; color: #065f46; }
 .notice-info { background: #eff6ff; color: #1e40af; }

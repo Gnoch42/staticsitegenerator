@@ -15,6 +15,8 @@ export interface RenderOptions {
   pdfHref?: string;
   /** Fige une seule langue (rendu PDF) : n'émet pas les autres. */
   onlyLang?: string;
+  /** Mode de rendu : "online" (défaut) ou "print" (PDF). */
+  mode?: "online" | "print";
 }
 
 /** Rendu React d'une page (utilisé par la preview Next.js). */
@@ -33,6 +35,8 @@ export function renderPageElement(
       nav={nav}
       langs={langs}
       activeLang={activeLang}
+      mode={opts.mode ?? "online"}
+      ownerName={full.site.ownerName}
       showPdf={opts.showPdf}
       pdfHref={opts.pdfHref}
     />

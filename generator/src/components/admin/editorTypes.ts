@@ -1,8 +1,9 @@
-import type { SectionType, Multilingual } from "@/lib/types";
+import type { SectionType, Multilingual, Visibility } from "@/lib/types";
 
 export interface EditorItem {
   id: number;
   data: Record<string, unknown>;
+  visibility: Visibility;
 }
 
 export interface EditorSection {
@@ -10,6 +11,7 @@ export interface EditorSection {
   type: SectionType;
   enabled: boolean;
   title: Multilingual;
+  visibility: Visibility;
   items: EditorItem[];
 }
 

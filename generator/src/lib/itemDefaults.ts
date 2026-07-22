@@ -38,6 +38,8 @@ export function defaultItemData(
       return perLang({ value: "" });
     case "video_embed":
       return { provider: "youtube", url: "", caption: label() };
+    case "portfolio_gallery":
+      return { image: "", alt: "", link: "", caption: label() };
     case "publication_list":
       return {
         ...perLang({ title: "", venue: "", abstract: "" }),
