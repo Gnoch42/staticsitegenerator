@@ -1,153 +1,160 @@
-# Générateur de site CV
+# CV site generator
 
-Application web **auto-hébergée, mono-utilisateur** pour générer un site personnel
-professionnel de 4 pages (**CV, Vidéo, Publications, Contact**), bilingue, avec
-export PDF du CV. Une instance = une personne (l'isolation se fait au niveau
-infrastructure, une instance Docker par utilisateur — aucun multi-tenant dans le code).
+*Version française : [README.fr.md](README.fr.md).*
+
+A **self-hosted, single-user** web app to generate a professional personal site
+of up to five pages (**CV, Video, Publications, Portfolio, Contact**), bilingual,
+with PDF export of the CV and company/role-targeted **CV profiles**. One instance =
+one person (isolation is at the infrastructure level — one Docker instance per
+person, no multi-tenant in the code).
 
 ## Architecture
 
-Deux services, un volume partagé :
+Two services, one shared volume:
 
-| Service | Rôle | Cycle de vie |
+| Service | Role | Lifecycle |
 |---|---|---|
-| **cv-generator** | App Next.js : édition (`/admin`), aperçu, génération statique, PDF | Démarré **à la demande** (Start/Stop) |
-| **cv-site** | Serveur **Caddy** qui sert les fichiers statiques publiés | **Toujours actif** |
+| **cv-generator** | Next.js app: editing (`/admin`), preview, static generation, PDF | Started **on demand** (Start/Stop) |
+| **cv-site** | **Caddy** server that serves the published static files | **Always on** |
 
-Le volume partagé contient :
-- `/data/cv.db` — base **SQLite** (écrite par `cv-generator`)
-- `/data/site/` — site statique publié (écrit par `cv-generator`, servi par `cv-site`)
+The shared volume holds:
+- `/data/cv.db` — **SQLite** database (written by `cv-generator`)
+- `/data/site/` — published static site (written by `cv-generator`, served by `cv-site`)
+- `/data/uploads/` — uploaded images (portfolio, profile photo)
 
-Le bouton **« Publier »** rend les 4 pages (dans toutes les langues configurées),
-écrit le HTML/CSS dans `/data/site`, et n'appelle **aucun service externe** — tout
-reste local à l'instance.
+The **"Publish"** button renders the enabled pages (in every configured language),
+writes the HTML/CSS into `/data/site`, and calls **no external service** — everything
+stays local to the instance.
 
 ### Stack
 Next.js (App Router) · TypeScript · Drizzle ORM + better-sqlite3 · Playwright (PDF) ·
-Caddy · Auth par mot de passe unique (cookie de session signé).
+Caddy · single-password auth (signed session cookie).
 
-## Lancer en local
+## Features
+- **Toggleable tabs** — each page can be enabled/disabled from Settings; disabled
+  pages are removed from the published site.
+- **Name & profile photo** — shown in the site header and at the top of the CV
+  (all templates + PDF), with a clean fallback when no photo is set.
+- **CV profiles** — targeted variants (role/company). Each content item can be
+  tagged to zero, one, or several profiles (many-to-many). An item with **no
+  profile is always included**. The active profile drives both the published web
+  CV and the PDF; "Full CV" shows everything.
+- **Online / print visibility** — every section and item can be shown "Online +
+  PDF", "Online only", or "PDF only". The web render and the PDF filter accordingly,
+  so the two renders can differ (compact print layout, web-only extra content).
+- **Bilingual content** — per-item JSON, with a no-reload FR/EN toggle on the site.
+- **Bilingual admin UI** — the `/admin` interface itself is available in French or
+  English, independently of the CV content language.
+- **Portfolio** — commented image gallery, by external **URL** or **file upload**.
+- **5 templates** — minimal, structured, academic, modern, slate.
 
-### Option A — Node (développement)
+## Run locally
+
+### Option A — Node (development)
 ```bash
 cd generator
 npm install
 
-# 1) Générer le hash du mot de passe admin
-node scripts/hash-password.mjs "monMotDePasse"
+# 1) Generate the admin password hash
+node scripts/hash-password.mjs "yourPassword"
 
-# 2) Variables d'environnement (dans generator/.env.local ou l'environnement)
-export ADMIN_PASSWORD_HASH='<hash obtenu ci-dessus>'
+# 2) Environment variables (in generator/.env.local or the environment)
+export ADMIN_PASSWORD_HASH='<hash from step 1>'
 export SESSION_SECRET="$(openssl rand -hex 32)"
 export DATABASE_PATH=./data/cv.db
 export SITE_OUTPUT_DIR=./data/site
 
-# 3) Initialiser la base (facultatif : fait aussi au 1er démarrage)
-npm run db:init
-
-# 4) Démarrer
+# 3) Start
 npm run dev
 ```
-- Éditeur : http://localhost:3000/admin
-- Aperçu live : http://localhost:3000/preview
-- Après « Publier », le site statique est écrit dans `generator/data/site/`.
+- Editor: http://localhost:3000/admin
+- Live preview: http://localhost:3000/preview
+- After "Publish", the static site is written to `generator/data/site/`.
 
-> **Alternative** : mettre ces variables dans `generator/.env.local` (chargé
-> automatiquement). ⚠️ Dans un fichier `.env`, **échappez chaque `$` du hash
-> bcrypt en `\$`** (sinon Next corrompt le hash et la connexion échoue) —
-> ex. `ADMIN_PASSWORD_HASH=\$2b\$12\$...`. Avec `export` en shell entre quotes
-> simples (ci-dessus), pas d'échappement nécessaire.
+> **Alternative**: put the variables in `generator/.env.local` (loaded
+> automatically). ⚠️ In a `.env` file, **escape every `$` in the bcrypt hash as
+> `\$`** (otherwise Next corrupts the hash and login fails) — e.g.
+> `ADMIN_PASSWORD_HASH=\$2b\$12\$...`. With a shell `export` in single quotes, no
+> escaping is needed.
 
-> L'export **PDF** nécessite les navigateurs Playwright :
-> `npx playwright install chromium` (une seule fois).
+> PDF export needs the Playwright browser: `npx playwright install chromium` (once).
 
-> **Reset local complet** : `lsof -ti :3000 | xargs kill -9` puis, dans
-> `generator/`, `rm -rf .next data` et `npm run dev` (repart d'une base neuve).
+> **Full local reset**: `lsof -ti :3000 | xargs kill -9`, then in `generator/`
+> run `rm -rf .next data` and `npm run dev` (starts from a fresh database).
 
-### Option B — Docker Compose (proche de la prod)
+### Option B — Docker Compose (production-like)
 ```bash
 cp .env.example .env
-# éditez .env : ADMIN_PASSWORD_HASH, SESSION_SECRET
+# edit .env: ADMIN_PASSWORD_HASH, SESSION_SECRET
 docker compose up --build
 ```
-Pour accéder aux services en local, décommentez les blocs `ports:` dans
-`docker-compose.yml` (`3000` pour l'admin, `8080` pour le site publié).
+To reach the services locally, uncomment the `ports:` blocks in `docker-compose.yml`
+(`3000` for the admin, `8080` for the published site).
 
-## Déploiement sur Coolify
+## Deploy on Coolify
 
-Créez **deux ressources** dans le même projet, pointant sur ce dépôt Git.
+Create **two resources** in the same project, both pointing at this Git repo.
 
-### 1. Volume partagé
-Créez un volume nommé (ex. `cv-shared`) monté sur **`/data`** dans les **deux**
-ressources. C'est le seul point de partage entre elles.
+### 1. Shared volume
+Create a named volume (e.g. `cv-shared`) mounted at **`/data`** in **both**
+resources. It is the only shared point between them.
 
-### 2. Ressource `cv-generator`
-- **Build** : Dockerfile — contexte `generator/`, `generator/Dockerfile`
-- **Port exposé** : `3000` (Traefik route le domaine vers ce port — pas de mapping de port en dur)
-- **Volume** : `cv-shared` → `/data`
-- **Variables d'environnement** :
-  | Variable | Valeur |
+### 2. `cv-generator` resource
+- **Build**: Dockerfile — context `generator/`, `generator/Dockerfile`
+- **Exposed port**: `3000` (Traefik routes the domain to this port — no hard-coded port mapping)
+- **Volume**: `cv-shared` → `/data`
+- **Environment variables**:
+  | Variable | Value |
   |---|---|
-  | `ADMIN_PASSWORD_HASH` | hash bcrypt (voir `hash-password.mjs`) |
+  | `ADMIN_PASSWORD_HASH` | bcrypt hash (raw, **no `\` escaping** in the Coolify UI) |
   | `SESSION_SECRET` | `openssl rand -hex 32` |
   | `DATABASE_PATH` | `/data/cv.db` |
   | `SITE_OUTPUT_DIR` | `/data/site` |
   | `PORT` | `3000` |
-- **Domaine** : ex. `admin.mondomaine.com` (TLS géré par Coolify/Traefik)
+- **Domain**: e.g. `admin.mydomain.com` (TLS handled by Coolify/Traefik)
 
-### 3. Ressource `cv-site`
-- **Build** : Dockerfile — contexte `site/`, `site/Dockerfile`
-- **Port exposé** : `80`
-- **Volume** : `cv-shared` → `/data` (lecture seule idéalement)
-- **Domaine** : ex. `mondomaine.com`
+### 3. `cv-site` resource
+- **Build**: Dockerfile — context `site/`, `site/Dockerfile`
+- **Exposed port**: `80`
+- **Volume**: `cv-shared` → `/data` (read-only ideally)
+- **Domain**: e.g. `mydomain.com`
 
-### Cycle Start/Stop de `cv-generator`
-`cv-generator` est conçu pour être **arrêté quand vous n'éditez pas** :
-- Au démarrage, il crée le schéma et sème les données **seulement si nécessaire**
-  (`CREATE TABLE IF NOT EXISTS`, seed idempotent) → démarrage à froid rapide.
-- Vous le **démarrez** dans Coolify pour éditer/publier, puis vous le **coupez**.
-- `cv-site` reste **toujours actif** et continue de servir la dernière version
-  publiée (les fichiers restent dans le volume), même quand `cv-generator` est arrêté.
+### `cv-generator` Start/Stop cycle
+`cv-generator` is designed to be **stopped when you are not editing**:
+- On start it creates the schema and seeds data **only if needed** (idempotent
+  `CREATE TABLE IF NOT EXISTS`, column migrations, seed) → fast cold start.
+- You **start** it in Coolify to edit/publish, then **stop** it.
+- `cv-site` stays **always on** and keeps serving the last published version (files
+  live in the volume), even when `cv-generator` is stopped.
 
-Rien n'est perdu à l'arrêt : la base et le site publié vivent dans le volume.
+Nothing is lost on stop: the database and the published site live in the volume.
+Schema upgrades (new columns, `profiles`/`item_profiles` tables) are applied
+automatically to an existing database — **no reset needed**.
 
-## Modèle de données (SQLite)
-
-`site` (1 ligne) · `templates` (seed) · `pages` · `sections` · `items`.
-Contenu multilingue stocké en **JSON par item** (pas de duplication de table).
-Schéma : [`generator/src/db/schema.ts`](generator/src/db/schema.ts) ·
-seed & bootstrap : [`generator/src/db/init.ts`](generator/src/db/init.ts).
-
-## Fonctionnalités
-- **Onglets activables** : chaque page (CV, Vidéo, Publications, Portfolio,
-  Contact) se désactive depuis Réglages → retirée du site publié.
-- **Nom en en-tête** : affiché sur le site et le CV (Réglages → Nom / identité).
-- **Portfolio** : galerie d'images commentées, par **URL** ou **upload** de
-  fichiers (stockés dans le volume, servis par Caddy après publication).
-- **Visibilité en ligne / imprimé** : chaque section et chaque item du CV peut
-  être affiché « en ligne + PDF », « en ligne seulement » ou « PDF seulement ».
+## Data model (SQLite)
+`site` (1 row) · `templates` (seed) · `pages` · `sections` · `items` ·
+`profiles` · `item_profiles` (many-to-many item ↔ profile). Multilingual content is
+stored as **JSON per item** (no table duplication).
+Schema: [`generator/src/db/schema.ts`](generator/src/db/schema.ts) ·
+seed & migration: [`generator/src/db/init.ts`](generator/src/db/init.ts).
 
 ## Templates
-Cinq thèmes qui consomment le **même** modèle de données, sans logique métier
-propre (toute la différence est dans le rendu + CSS) :
-- **minimal** — sobre, typographique
-- **structured** — deux colonnes (implémente le wireframe de référence du CV)
-- **academic** — sérif, met en valeur les publications
-- **modern** — en-tête coloré, accent vif
-- **slate** — sidebar sombre à gauche, contenu clair à droite
+Five themes that consume the **same** data model, with no theme-specific business
+logic (all the difference is in rendering + CSS): **minimal**, **structured** (two
+columns, reference CV wireframe), **academic**, **modern**, **slate**. Each template
+renders both a web layout and a compact **print layout** for the PDF.
+Components: `generator/src/templates/*` · styles: `generator/public/themes/*.css`.
 
-Composants : `generator/src/templates/*` · styles : `generator/public/themes/*.css`.
+## Portfolio & uploaded images
+Uploaded images are stored in the volume (`<DATA_DIR>/uploads`, overridable via
+`UPLOADS_DIR`), served at `/uploads/<file>` while editing, then **copied into the
+published site** on publish (Caddy serves them).
 
-## Portfolio & images uploadées
-Les images téléversées sont stockées dans le volume (`<DATA_DIR>/uploads`,
-surchargeable via `UPLOADS_DIR`), servies à `/uploads/<fichier>` pendant
-l'édition, puis **copiées dans le site publié** à la publication (Caddy les sert).
+## Automatic translation
+Isolated extension point: [`generator/src/lib/translate.ts`](generator/src/lib/translate.ts)
+(`translateContent()`). It is a **stub**; wiring DeepL / an LLM is done only inside
+`callProvider()` without touching the rest of the app.
 
-## Traduction automatique
-Point d'extension isolé : [`generator/src/lib/translate.ts`](generator/src/lib/translate.ts)
-(`translateContent()`). En v1 c'est un **stub** ; brancher DeepL / un LLM se fait
-uniquement dans `callProvider()` sans toucher au reste de l'app.
-
-## Ce qui n'est PAS inclus (v1)
-Pas de multi-tenant · pas d'intégration Git · pas d'OAuth/SSO · pas d'import
-ORCID/Scholar · pas de vrai appel d'API de traduction (architecture prête).
+## Not included
+No multi-tenant · no Git integration · no OAuth/SSO · no ORCID/Scholar import ·
+no real translation API call (architecture ready).

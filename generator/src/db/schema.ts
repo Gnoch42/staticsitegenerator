@@ -1,4 +1,4 @@
-import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
+import { sqliteTable, integer, text, primaryKey } from "drizzle-orm/sqlite-core";
 import type {
   Multilingual,
   ItemData,
@@ -23,8 +23,33 @@ export const site = sqliteTable("site", {
   languages: text("languages", { mode: "json" }).$type<string[]>().notNull(),
   defaultLanguage: text("default_language").notNull(),
   ownerName: text("owner_name"),
+  photoUrl: text("photo_url"),
+  adminLanguage: text("admin_language").notNull().default("fr"),
+  activeProfileId: integer("active_profile_id"),
   publishedAt: integer("published_at", { mode: "timestamp" }),
 });
+
+// ── profiles : variantes ciblées du CV (entreprise/poste) ──
+export const profiles = sqliteTable("profiles", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  name: text("name").notNull(),
+  slug: text("slug").notNull(),
+  position: integer("position").notNull().default(0),
+});
+
+// ── item_profiles : association plusieurs-à-plusieurs item ↔ profil ──
+export const itemProfiles = sqliteTable(
+  "item_profiles",
+  {
+    itemId: integer("item_id")
+      .notNull()
+      .references(() => items.id, { onDelete: "cascade" }),
+    profileId: integer("profile_id")
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+  },
+  (t) => ({ pk: primaryKey({ columns: [t.itemId, t.profileId] }) }),
+);
 
 // ── pages : les 4 pages du site ──
 export const pages = sqliteTable("pages", {
@@ -65,3 +90,5 @@ export type Site = typeof site.$inferSelect;
 export type Page = typeof pages.$inferSelect;
 export type Section = typeof sections.$inferSelect;
 export type Item = typeof items.$inferSelect;
+export type Profile = typeof profiles.$inferSelect;
+export type ItemProfile = typeof itemProfiles.$inferSelect;

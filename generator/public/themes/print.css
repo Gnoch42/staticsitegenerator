@@ -1,23 +1,56 @@
-/* CSS d'impression dédié pour le rendu PDF du CV (Playwright).
-   Mise en page A4, marges propres, aucun élément de nav/UI. */
+/* CSS d'impression dédié au rendu PDF du CV (Playwright).
+   A4, marges propres, aucun élément de nav/UI, et une mise en page
+   IMPRIMÉE compacte — distincte du web mais complète pour le profil actif. */
 @page {
   size: A4;
-  margin: 16mm 14mm;
+  margin: 14mm 13mm;
 }
 
 @media print {
-  .site-header { display: none !important; }
-  .pdf-btn, .lang-switch, .site-nav { display: none !important; }
+  /* Rien de la nav / des outils du site dans le PDF. */
+  .site-header,
+  .pdf-btn,
+  .lang-switch,
+  .site-nav { display: none !important; }
 
-  body { background: #fff; color: #000; font-size: 10.5pt; }
+  body { background: #fff; color: #000; font-size: 10pt; line-height: 1.4; }
+  a { color: #000; text-decoration: none; }
   .page { max-width: none; margin: 0; padding: 0; }
 
-  /* En PDF on fige une seule langue (voir ?lang= dans la route pdf). */
-  a { color: #000; text-decoration: none; }
+  /* ── Préserver la mise en page DEUX COLONNES à l'impression ──
+     (le breakpoint mobile ne doit jamais s'appliquer dans le PDF) */
+  .theme-structured .two-col,
+  .theme-slate .two-col {
+    display: grid !important;
+    grid-template-columns: 34% 1fr !important;
+    gap: 8mm !important;
+    align-items: start !important;
+  }
+  .theme-structured .col-sidebar,
+  .theme-slate .col-sidebar {
+    position: static !important;
+    background: transparent !important;
+    color: #000 !important;
+    padding: 0 !important;
+    border-right: 1px solid #ddd;
+    padding-right: 6mm !important;
+  }
+  .theme-slate .col-sidebar .sec-title,
+  .theme-slate .col-sidebar a,
+  .theme-slate .col-sidebar .contact-label,
+  .theme-slate .col-sidebar .muted { color: #000 !important; }
+  .theme-slate .col-sidebar .tag { background: #eee !important; color: #000 !important; border-color: #ccc !important; }
+  .theme-slate .col-main { padding-left: 0 !important; }
 
-  .sec { break-inside: avoid; margin-bottom: 1.1rem; }
-  .timeline-item, .pub-item { break-inside: avoid; }
+  /* Version imprimée plus compacte que le web. */
+  .cv-identity { margin-bottom: 8mm; }
+  .cv-photo { width: 70px; height: 70px; }
+  .col-sidebar .cv-photo { width: 90px; height: 90px; }
+  .sec { margin-bottom: 4mm; break-inside: avoid; }
+  .sec-title { font-size: 10.5pt; margin-bottom: 2mm; }
+  .timeline-item, .pub-item, .gallery-item { break-inside: avoid; }
+  .ti-desc, .block-text { font-size: 9.5pt; }
 
-  /* Le template structuré reste en deux colonnes à l'impression. */
-  .theme-structured .col-sidebar { background: transparent; padding: 0; }
+  /* Une galerie éventuelle reste lisible mais dense. */
+  .gallery { grid-template-columns: repeat(3, 1fr); gap: 4mm; }
 }

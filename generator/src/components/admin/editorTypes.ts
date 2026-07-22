@@ -4,6 +4,12 @@ export interface EditorItem {
   id: number;
   data: Record<string, unknown>;
   visibility: Visibility;
+  profileIds: number[];
+}
+
+export interface ProfileOption {
+  id: number;
+  name: string;
 }
 
 export interface EditorSection {

@@ -18,12 +18,15 @@ CREATE TABLE IF NOT EXISTS templates (
 );
 
 CREATE TABLE IF NOT EXISTS site (
-  id               INTEGER PRIMARY KEY,
-  template_id      TEXT NOT NULL REFERENCES templates(id),
-  languages        TEXT NOT NULL,
-  default_language TEXT NOT NULL,
-  owner_name       TEXT,
-  published_at     INTEGER
+  id                INTEGER PRIMARY KEY,
+  template_id       TEXT NOT NULL REFERENCES templates(id),
+  languages         TEXT NOT NULL,
+  default_language  TEXT NOT NULL,
+  owner_name        TEXT,
+  photo_url         TEXT,
+  admin_language    TEXT NOT NULL DEFAULT 'fr',
+  active_profile_id INTEGER,
+  published_at      INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS pages (
@@ -52,8 +55,23 @@ CREATE TABLE IF NOT EXISTS items (
   visibility TEXT NOT NULL DEFAULT 'both'
 );
 
+CREATE TABLE IF NOT EXISTS profiles (
+  id       INTEGER PRIMARY KEY AUTOINCREMENT,
+  name     TEXT NOT NULL,
+  slug     TEXT NOT NULL,
+  position INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS item_profiles (
+  item_id    INTEGER NOT NULL REFERENCES items(id) ON DELETE CASCADE,
+  profile_id INTEGER NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  PRIMARY KEY (item_id, profile_id)
+);
+
 CREATE INDEX IF NOT EXISTS idx_sections_page ON sections(page_id);
 CREATE INDEX IF NOT EXISTS idx_items_section ON items(section_id);
+CREATE INDEX IF NOT EXISTS idx_item_profiles_item ON item_profiles(item_id);
+CREATE INDEX IF NOT EXISTS idx_item_profiles_profile ON item_profiles(profile_id);
 `;
 
 export function bootstrapDatabase(conn: BetterSqlite3.Database): void {
@@ -78,6 +96,9 @@ function migrate(conn: BetterSqlite3.Database): void {
   };
 
   addColumn("site", "owner_name", "TEXT");
+  addColumn("site", "photo_url", "TEXT");
+  addColumn("site", "admin_language", "TEXT NOT NULL DEFAULT 'fr'");
+  addColumn("site", "active_profile_id", "INTEGER");
   addColumn("sections", "visibility", "TEXT NOT NULL DEFAULT 'both'");
   addColumn("items", "visibility", "TEXT NOT NULL DEFAULT 'both'");
 

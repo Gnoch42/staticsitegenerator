@@ -28,7 +28,7 @@
 .theme-slate .col-main { padding: 0 0 0 2rem; }
 .theme-slate .sec-title { color: var(--accent); text-transform: none; letter-spacing: 0; }
 
-@media (max-width: 760px) {
+@media screen and (max-width: 760px) {
   .theme-slate .two-col { grid-template-columns: 1fr; }
   .theme-slate .col-main { padding: 1.5rem 0 0; }
 }

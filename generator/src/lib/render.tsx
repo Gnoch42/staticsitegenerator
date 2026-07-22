@@ -17,6 +17,8 @@ export interface RenderOptions {
   onlyLang?: string;
   /** Mode de rendu : "online" (défaut) ou "print" (PDF). */
   mode?: "online" | "print";
+  /** Profil actif à rendre ; `undefined` = utilise le profil actif du site. */
+  profileId?: number | null;
 }
 
 /** Rendu React d'une page (utilisé par la preview Next.js). */
@@ -29,6 +31,8 @@ export function renderPageElement(
   const langs = opts.onlyLang ? [opts.onlyLang] : full.site.languages;
   const activeLang = opts.activeLang ?? full.site.defaultLanguage;
   const nav = buildNav(full.pages, page.type, opts.linkFor);
+  const profileId =
+    opts.profileId !== undefined ? opts.profileId : full.site.activeProfileId;
   return (
     <Template
       page={page}
@@ -37,6 +41,8 @@ export function renderPageElement(
       activeLang={activeLang}
       mode={opts.mode ?? "online"}
       ownerName={full.site.ownerName}
+      photoUrl={full.site.photoUrl}
+      profileId={profileId}
       showPdf={opts.showPdf}
       pdfHref={opts.pdfHref}
     />

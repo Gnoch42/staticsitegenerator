@@ -2,12 +2,14 @@
 
 import { useActionState } from "react";
 import { loginAction } from "@/app/admin/actions";
+import { tAdmin, type AdminLang } from "@/lib/adminI18n";
 
-export function LoginForm() {
+export function LoginForm({ lang }: { lang: AdminLang }) {
   const [state, formAction, pending] = useActionState(loginAction, {});
+  const t = (k: string) => tAdmin(k, lang);
   return (
     <form action={formAction}>
-      <label htmlFor="password">Mot de passe</label>
+      <label htmlFor="password">{t("login_password")}</label>
       <input
         id="password"
         name="password"
@@ -15,14 +17,14 @@ export function LoginForm() {
         autoFocus
         autoComplete="current-password"
       />
-      {state?.error && <div className="error">{state.error}</div>}
+      {state?.error && <div className="error">{t("login_error")}</div>}
       <button
         type="submit"
         className="btn-primary"
         style={{ marginTop: "1rem", width: "100%" }}
         disabled={pending}
       >
-        {pending ? "…" : "Se connecter"}
+        {pending ? "…" : t("login_submit")}
       </button>
     </form>
   );

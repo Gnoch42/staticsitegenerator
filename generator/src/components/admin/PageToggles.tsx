@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { setPageEnabled } from "@/app/admin/actions";
+import { useAdminT } from "./AdminI18n";
 
 export interface PageRow {
   id: number;
@@ -13,6 +14,7 @@ export interface PageRow {
 }
 
 export function PageToggles({ pages }: { pages: PageRow[] }) {
+  const t = useAdminT();
   const [rows, setRows] = useState(pages);
   const [pending, startTransition] = useTransition();
 
@@ -23,9 +25,7 @@ export function PageToggles({ pages }: { pages: PageRow[] }) {
 
   return (
     <div>
-      <p className="muted">
-        Décochez un onglet pour le retirer du site publié (il reste éditable ici).
-      </p>
+      <p className="muted">{t("pages_hint")}</p>
       <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
         {rows.map((p) => (
           <li
@@ -42,10 +42,10 @@ export function PageToggles({ pages }: { pages: PageRow[] }) {
                 onChange={(e) => toggle(p.id, e.target.checked)}
               />
               <span className="card-title">{p.label}</span>
-              <span className="muted">· {p.sectionCount} section(s)</span>
+              <span className="muted">· {p.sectionCount} {t("page_sections")}</span>
             </label>
             <Link className="btn btn-sm" href={`/admin/${p.type}`}>
-              Éditer
+              {t("edit")}
             </Link>
           </li>
         ))}

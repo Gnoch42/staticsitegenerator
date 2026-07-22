@@ -1,5 +1,6 @@
 import { SectionRenderer } from "@/components/render/SectionRenderer";
 import { SiteHeader } from "@/components/render/SiteHeader";
+import { CvIdentity } from "@/components/render/CvIdentity";
 import { SIDEBAR_SECTIONS } from "@/lib/types";
 import type { TemplateProps } from "../types";
 
@@ -11,10 +12,12 @@ export default function SlateTemplate({
   activeLang,
   mode,
   ownerName,
+  photoUrl,
+  profileId,
   showPdf,
   pdfHref,
 }: TemplateProps) {
-  const ctx = { langs, mode };
+  const ctx = { langs, mode, profileId };
   const isCv = page.type === "cv";
   const sidebar = page.sections.filter((s) => SIDEBAR_SECTIONS.includes(s.type));
   const main = page.sections.filter((s) => !SIDEBAR_SECTIONS.includes(s.type));
@@ -31,6 +34,7 @@ export default function SlateTemplate({
       {isCv ? (
         <main className="page page-slate two-col">
           <aside className="col-sidebar">
+            <CvIdentity ownerName={ownerName} photoUrl={photoUrl} />
             {sidebar.map((s) => (
               <SectionRenderer key={s.id} section={s} ctx={ctx} />
             ))}

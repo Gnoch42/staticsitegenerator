@@ -14,7 +14,10 @@ const THEMES_DIR = join(process.cwd(), "public", "themes");
  * dédié. Le HTML (CSS inclus) est injecté directement dans la page
  * headless — aucun élément de nav/UI, une seule langue figée.
  */
-export async function renderCvPdf(lang?: string): Promise<Uint8Array> {
+export async function renderCvPdf(
+  lang?: string,
+  profileId?: number | null,
+): Promise<Uint8Array> {
   const full = await getFullSite();
   const cv = full.pages.find((p) => p.type === "cv");
   if (!cv) throw new Error("Page CV introuvable");
@@ -34,6 +37,7 @@ export async function renderCvPdf(lang?: string): Promise<Uint8Array> {
       activeLang: onlyLang,
       onlyLang,
       mode: "print",
+      profileId: profileId !== undefined ? profileId : full.site.activeProfileId,
       showPdf: false,
     }),
   );

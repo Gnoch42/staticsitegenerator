@@ -2,8 +2,10 @@
 
 import { useState, useTransition } from "react";
 import { setOwnerName } from "@/app/admin/actions";
+import { useAdminT } from "./AdminI18n";
 
 export function OwnerNameField({ initial }: { initial: string }) {
+  const t = useAdminT();
   const [name, setName] = useState(initial);
   const [pending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
@@ -17,7 +19,7 @@ export function OwnerNameField({ initial }: { initial: string }) {
 
   return (
     <div>
-      <p className="muted">Affiché en en-tête du site et du CV.</p>
+      <p className="muted">{t("identity_hint")}</p>
       <div className="row" style={{ alignItems: "center" }}>
         <input
           value={name}
@@ -25,14 +27,14 @@ export function OwnerNameField({ initial }: { initial: string }) {
             setName(e.target.value);
             setSaved(false);
           }}
-          placeholder="Prénom Nom"
+          placeholder={t("identity_name_ph")}
         />
         <div style={{ flex: "0 0 auto" }}>
           <button className="btn-primary" onClick={save} disabled={pending}>
-            {pending ? "…" : "Enregistrer"}
+            {pending ? "…" : t("save")}
           </button>
         </div>
-        {saved && <span className="muted">Enregistré ✓</span>}
+        {saved && <span className="muted">{t("saved")}</span>}
       </div>
     </div>
   );

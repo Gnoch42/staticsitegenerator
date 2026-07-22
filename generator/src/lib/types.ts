@@ -21,6 +21,21 @@ export function isVisibleIn(
   return v === "both" || v === mode;
 }
 
+/**
+ * Un item doit-il apparaître pour le profil actif ?
+ * Règle validée : un item SANS profil associé est "toujours inclus" ; sinon
+ * il n'apparaît que s'il est associé au profil actif. `activeProfileId = null`
+ * = CV complet (tous les items).
+ */
+export function isInProfile(
+  itemProfileIds: number[],
+  activeProfileId: number | null,
+): boolean {
+  if (activeProfileId == null) return true;
+  if (itemProfileIds.length === 0) return true;
+  return itemProfileIds.includes(activeProfileId);
+}
+
 export type SectionType =
   // page cv
   | "contact"

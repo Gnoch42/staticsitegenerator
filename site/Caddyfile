@@ -1,18 +1,19 @@
-# cv-site — sert uniquement les fichiers statiques du volume partagé.
-# Le routing HTTP externe (domaine, TLS) est géré par Traefik/Coolify ;
-# ici Caddy écoute simplement en HTTP sur :80 en interne.
+# cv-site — serves only the static files from the shared volume.
+# External HTTP routing (domain, TLS) is handled by Traefik/Coolify;
+# here Caddy simply listens over HTTP on :80 internally.
 
 :80 {
 	root * /data/site
 	encode gzip zstd
 	file_server
 
-	# URLs "propres" : /cv -> /cv/index.html
+	# "Clean" URLs: /cv -> /cv/index.html
 	try_files {path} {path}/ {path}/index.html
 
-	# Si le site n'a pas encore été publié, message clair au lieu d'un 404 brut.
+	# If the site has not been published yet, show a clear message
+	# instead of a raw 404.
 	handle_errors {
 		@notpublished expression {http.error.status_code} == 404
-		respond @notpublished "Site pas encore publié. Ouvrez l'admin et cliquez sur « Publier »." 200
+		respond @notpublished "Site not published yet. Open the admin and click \"Publish\"." 200
 	}
 }

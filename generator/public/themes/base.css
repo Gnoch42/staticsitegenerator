@@ -47,6 +47,18 @@ img { max-width: 100%; height: auto; }
 }
 .site-brand { font-weight: 700; font-size: 1.15rem; margin-right: auto; }
 .site-nav { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+/* ── Identité en haut du CV (nom + photo) ── */
+.cv-identity { display: flex; align-items: center; gap: 1.1rem; margin-bottom: 1.75rem; }
+.cv-photo {
+  width: 90px; height: 90px; border-radius: 50%; object-fit: cover;
+  border: 2px solid var(--border); flex: 0 0 auto;
+}
+.cv-name { font-size: 1.7rem; line-height: 1.15; margin: 0; }
+/* En sidebar (templates deux colonnes) : empilé et centré */
+.col-sidebar .cv-identity { flex-direction: column; align-items: center; text-align: center; }
+.col-sidebar .cv-photo { width: 120px; height: 120px; }
+.col-sidebar .cv-name { font-size: 1.3rem; }
 .nav-link { color: var(--fg); font-weight: 500; padding: .25rem 0; }
 .nav-link.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
 .site-tools { display: flex; align-items: center; gap: .75rem; }

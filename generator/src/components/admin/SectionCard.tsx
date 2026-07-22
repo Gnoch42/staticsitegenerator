@@ -14,24 +14,29 @@ import {
   deleteItem,
   reorderItems,
   setItemVisibility,
+  setItemProfiles,
 } from "@/app/admin/actions";
-import type { EditorSection } from "./editorTypes";
+import type { EditorSection, ProfileOption } from "./editorTypes";
 import { ItemEditor } from "./ItemEditor";
 import { VisibilitySelect } from "./VisibilitySelect";
+import { useAdminT } from "./AdminI18n";
 
 export function SectionCard({
   section,
   langs,
   defaultLang,
+  profiles,
   onPatch,
   onRemove,
 }: {
   section: EditorSection;
   langs: string[];
   defaultLang: string;
+  profiles: ProfileOption[];
   onPatch: (patch: Partial<EditorSection>) => void;
   onRemove: () => void;
 }) {
+  const t = useAdminT();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: section.id });
   const [open, setOpen] = useState(true);
@@ -69,8 +74,17 @@ export function SectionCard({
     setItemVisibility(itemId, visibility);
   }
 
+  function changeItemProfiles(itemId: number, profileIds: number[]) {
+    onPatch({
+      items: section.items.map((it) =>
+        it.id === itemId ? { ...it, profileIds } : it,
+      ),
+    });
+    setItemProfiles(itemId, profileIds);
+  }
+
   async function handleDelete() {
-    if (!confirm("Supprimer cette section et tous ses items ?")) return;
+    if (!confirm(t("section_delete_confirm"))) return;
     await deleteSection(section.id);
     onRemove();
   }
@@ -78,7 +92,9 @@ export function SectionCard({
   async function handleAddItem() {
     const { id } = await addItem(section.id, section.type, langs);
     const data = defaultItemData(section.type, langs);
-    onPatch({ items: [...section.items, { id, data, visibility: "both" }] });
+    onPatch({
+      items: [...section.items, { id, data, visibility: "both", profileIds: [] }],
+    });
   }
 
   function handleItemChange(itemId: number, data: Record<string, unknown>) {
@@ -108,7 +124,7 @@ export function SectionCard({
     <div className="card" ref={setNodeRef} style={style}>
       <div className="card-head">
         <div className="toolbar">
-          <span className="drag-handle" {...attributes} {...listeners} title="Glisser">
+          <span className="drag-handle" {...attributes} {...listeners} title={t("drag")}>
             ⠿
           </span>
           <button
@@ -125,7 +141,7 @@ export function SectionCard({
           <VisibilitySelect
             value={section.visibility}
             onChange={changeVisibility}
-            title="Visibilité de la section (en ligne / PDF)"
+            title={t("vis_section")}
           />
           <label style={{ display: "flex", gap: ".35rem", alignItems: "center", margin: 0 }}>
             <input
@@ -134,10 +150,10 @@ export function SectionCard({
               checked={section.enabled}
               onChange={toggleEnabled}
             />
-            <span className="muted">Activée</span>
+            <span className="muted">{t("enabled")}</span>
           </label>
           <button className="btn btn-sm btn-danger" onClick={handleDelete}>
-            Supprimer
+            {t("delete")}
           </button>
         </div>
       </div>
@@ -147,7 +163,7 @@ export function SectionCard({
           <div className="lang-cols">
             {langs.map((lang) => (
               <div key={lang} className="lang-col">
-                <span className="lang-tag">Titre — {LANG_NAMES[lang] ?? lang}</span>
+                <span className="lang-tag">{t("title_word")} — {LANG_NAMES[lang] ?? lang}</span>
                 <input
                   value={section.title[lang] ?? ""}
                   onChange={(e) => setTitle(lang, e.target.value)}
@@ -166,16 +182,18 @@ export function SectionCard({
                 langs={langs}
                 index={i}
                 count={section.items.length}
+                profiles={profiles}
                 onChange={(data) => handleItemChange(item.id, data)}
                 onDelete={() => handleItemDelete(item.id)}
                 onMove={(dir) => moveItem(i, dir)}
                 onVisibilityChange={(v) => changeItemVisibility(item.id, v)}
+                onProfilesChange={(ids) => changeItemProfiles(item.id, ids)}
               />
             ))}
           </div>
 
           <button className="btn btn-sm" onClick={handleAddItem}>
-            + Ajouter un item
+            + {t("item_add")}
           </button>
         </div>
       )}

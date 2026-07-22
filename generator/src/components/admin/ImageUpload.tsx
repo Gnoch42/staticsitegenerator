@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useAdminT } from "./AdminI18n";
 
 /**
  * Champ image du portfolio : soit une URL externe, soit un upload de
@@ -13,6 +14,7 @@ export function ImageUpload({
   value: string;
   onChange: (url: string) => void;
 }) {
+  const t = useAdminT();
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,12 +45,12 @@ export function ImageUpload({
           <img src={value} alt="" />
         </div>
       )}
-      <label>Image (URL ou upload)</label>
+      <label>{t("f_image")}</label>
       <div className="row" style={{ alignItems: "center" }}>
         <input
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="/uploads/… ou https://…"
+          placeholder="/uploads/… · https://…"
         />
         <div style={{ flex: "0 0 auto" }}>
           <input
@@ -67,7 +69,7 @@ export function ImageUpload({
             onClick={() => inputRef.current?.click()}
             disabled={busy}
           >
-            {busy ? "Envoi…" : "Téléverser"}
+            {busy ? t("f_uploading") : t("f_upload")}
           </button>
         </div>
       </div>

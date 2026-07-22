@@ -9,9 +9,18 @@ export async function GET(req: Request) {
   if (!(await isAuthenticated())) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
-  const lang = new URL(req.url).searchParams.get("lang") ?? undefined;
+  const params = new URL(req.url).searchParams;
+  const lang = params.get("lang") ?? undefined;
+  const profileParam = params.get("profile");
+  // "all" ou absent → profil actif du site ; sinon un id de profil précis.
+  const profileId =
+    profileParam === "all"
+      ? null
+      : profileParam
+        ? Number(profileParam)
+        : undefined;
   try {
-    const pdf = await renderCvPdf(lang);
+    const pdf = await renderCvPdf(lang, profileId);
     // Cast : Uint8Array est un BodyInit valide, mais le générique
     // Uint8Array<ArrayBufferLike> de TS 5.7 n'unifie pas avec ArrayBuffer.
     return new NextResponse(pdf as unknown as BodyInit, {

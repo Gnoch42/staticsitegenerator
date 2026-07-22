@@ -1,11 +1,13 @@
 import type { SectionWithItems } from "@/lib/queries";
 import type { Multilingual } from "@/lib/types";
-import { isVisibleIn } from "@/lib/types";
+import { isVisibleIn, isInProfile } from "@/lib/types";
 import { I18n, pickField, hasContent } from "./I18n";
 
 interface Ctx {
   langs: string[];
   mode: "online" | "print";
+  /** Profil actif ; null = CV complet. */
+  profileId: number | null;
 }
 
 export function SectionRenderer({
@@ -18,9 +20,11 @@ export function SectionRenderer({
   // Section masquée, ou non visible dans ce mode (en ligne / imprimé).
   if (!section.enabled || !isVisibleIn(section.visibility, ctx.mode)) return null;
 
-  // Filtre les items selon leur propre visibilité pour ce mode.
-  const visibleItems = section.items.filter((it) =>
-    isVisibleIn(it.visibility, ctx.mode),
+  // Filtre les items par visibilité (mode) ET par profil actif.
+  const visibleItems = section.items.filter(
+    (it) =>
+      isVisibleIn(it.visibility, ctx.mode) &&
+      isInProfile(it.profileIds, ctx.profileId),
   );
   if (visibleItems.length === 0) return null;
   section = { ...section, items: visibleItems };

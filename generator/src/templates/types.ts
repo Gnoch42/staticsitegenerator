@@ -12,6 +12,10 @@ export interface TemplateProps {
   mode: "online" | "print";
   /** Nom affiché en en-tête (site + CV). */
   ownerName?: string | null;
+  /** Photo de profil (URL) — affichée sur le CV, repli propre si absente. */
+  photoUrl?: string | null;
+  /** Profil actif ; null = CV complet. */
+  profileId: number | null;
   showPdf?: boolean;
   pdfHref?: string;
 }

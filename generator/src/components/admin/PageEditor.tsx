@@ -17,8 +17,9 @@ import {
 import type { SectionType } from "@/lib/types";
 import { SECTION_LABELS } from "@/lib/types";
 import { addSection, reorderSections } from "@/app/admin/actions";
-import type { EditorSection, AllowedSection } from "./editorTypes";
+import type { EditorSection, AllowedSection, ProfileOption } from "./editorTypes";
 import { SectionCard } from "./SectionCard";
+import { useAdminT } from "./AdminI18n";
 
 export function PageEditor({
   pageId,
@@ -27,6 +28,7 @@ export function PageEditor({
   langs,
   defaultLang,
   allowedSectionTypes,
+  profiles,
 }: {
   pageId: number;
   pageType: string;
@@ -34,7 +36,9 @@ export function PageEditor({
   langs: string[];
   defaultLang: string;
   allowedSectionTypes: AllowedSection[];
+  profiles: ProfileOption[];
 }) {
+  const t = useAdminT();
   const [sections, setSections] = useState<EditorSection[]>(initialSections);
   const [newType, setNewType] = useState<SectionType>(
     allowedSectionTypes[0]?.type ?? "custom",
@@ -104,6 +108,7 @@ export function PageEditor({
               section={section}
               langs={langs}
               defaultLang={defaultLang}
+              profiles={profiles}
               onPatch={(patch) => patchSection(section.id, patch)}
               onRemove={() => removeSection(section.id)}
             />
@@ -111,9 +116,7 @@ export function PageEditor({
         </SortableContext>
       </DndContext>
 
-      {sections.length === 0 && (
-        <p className="muted">Aucune section pour l&apos;instant.</p>
-      )}
+      {sections.length === 0 && <p className="muted">{t("section_none")}</p>}
 
       <div className="card">
         <div className="toolbar">
@@ -129,7 +132,7 @@ export function PageEditor({
             ))}
           </select>
           <button className="btn-primary" onClick={handleAdd} disabled={busy}>
-            + Ajouter une section
+            + {t("section_add")}
           </button>
         </div>
       </div>

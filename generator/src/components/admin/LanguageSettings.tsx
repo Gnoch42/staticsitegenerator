@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { LANG_NAMES } from "@/lib/i18n";
 import { setLanguages } from "@/app/admin/actions";
+import { useAdminT } from "./AdminI18n";
 
 const AVAILABLE = ["fr", "en", "es", "de"];
 
@@ -13,6 +14,7 @@ export function LanguageSettings({
   languages: string[];
   defaultLanguage: string;
 }) {
+  const t = useAdminT();
   const [langs, setLangs] = useState<string[]>(languages);
   const [def, setDef] = useState(defaultLanguage);
   const [pending, startTransition] = useTransition();
@@ -53,7 +55,7 @@ export function LanguageSettings({
         ))}
       </div>
 
-      <label>Langue par défaut</label>
+      <label>{t("langs_default")}</label>
       <select
         value={def}
         onChange={(e) => {
@@ -71,9 +73,9 @@ export function LanguageSettings({
 
       <div className="toolbar" style={{ marginTop: ".75rem" }}>
         <button className="btn-primary" onClick={save} disabled={pending || langs.length === 0}>
-          {pending ? "…" : "Enregistrer"}
+          {pending ? "…" : t("save")}
         </button>
-        {saved && <span className="muted">Enregistré ✓</span>}
+        {saved && <span className="muted">{t("saved")}</span>}
       </div>
     </div>
   );

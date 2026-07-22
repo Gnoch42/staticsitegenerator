@@ -5,22 +5,33 @@ import type { SectionType, Visibility } from "@/lib/types";
 import { LANG_NAMES } from "@/lib/i18n";
 import { MULTILINGUAL_FIELDS, FLAT_FIELDS } from "@/lib/itemDefaults";
 import { translateAction } from "@/app/admin/actions";
-import type { EditorItem } from "./editorTypes";
+import type { EditorItem, ProfileOption } from "./editorTypes";
 import { VisibilitySelect } from "./VisibilitySelect";
 import { ImageUpload } from "./ImageUpload";
+import { ProfileTags } from "./ProfileTags";
+import { useAdminT } from "./AdminI18n";
 
-const FIELD_LABELS: Record<string, string> = {
-  title: "Titre",
-  organization: "Organisation",
-  location: "Lieu",
-  description: "Description",
-  text: "Texte",
-  heading: "Titre du bloc",
-  body: "Contenu",
-  category: "Catégorie",
-  value: "Valeur",
-  venue: "Revue / lieu",
-  abstract: "Résumé",
+// Clé de traduction pour un champ multilingue (f_title, f_venue…).
+const FIELD_KEY: Record<string, string> = {
+  title: "f_title",
+  organization: "f_organization",
+  location: "f_location",
+  description: "f_description",
+  text: "f_text",
+  heading: "f_heading",
+  body: "f_body",
+  category: "f_category",
+  value: "f_value",
+  venue: "f_venue",
+  abstract: "f_abstract",
+};
+// Clé de traduction pour un champ "flat" (dates, année…).
+const FLAT_KEY: Record<string, string> = {
+  start_date: "f_start",
+  end_date: "f_end",
+  year: "f_year",
+  authors: "f_authors",
+  link: "f_doi",
 };
 
 const CONTACT_KINDS = [
@@ -39,21 +50,26 @@ export function ItemEditor({
   langs,
   index,
   count,
+  profiles,
   onChange,
   onDelete,
   onMove,
   onVisibilityChange,
+  onProfilesChange,
 }: {
   sectionType: SectionType;
   item: EditorItem;
   langs: string[];
   index: number;
   count: number;
+  profiles: ProfileOption[];
   onChange: (data: Record<string, unknown>) => void;
   onDelete: () => void;
   onMove: (dir: -1 | 1) => void;
   onVisibilityChange: (v: Visibility) => void;
+  onProfilesChange: (ids: number[]) => void;
 }) {
+  const t = useAdminT();
   const [data, setData] = useState<Record<string, unknown>>(item.data);
   const [translating, startTranslate] = useTransition();
 
@@ -135,16 +151,16 @@ export function ItemEditor({
   return (
     <div className="item-block">
       <div className="card-head" style={{ marginBottom: ".5rem" }}>
-        <span className="muted">Item {index + 1}</span>
+        <span className="muted">{t("item_word")} {index + 1}</span>
         <div className="toolbar">
           <VisibilitySelect
             value={item.visibility}
             onChange={onVisibilityChange}
-            title="Visibilité de l'item (en ligne / PDF)"
+            title={t("vis_item")}
           />
           {langs.length > 1 && (
             <button className="btn btn-sm" onClick={translateItem} disabled={translating}>
-              {translating ? "…" : "Traduire"}
+              {translating ? "…" : t("translate")}
             </button>
           )}
           <button className="btn btn-sm" onClick={() => onMove(-1)} disabled={index === 0}>
@@ -163,6 +179,12 @@ export function ItemEditor({
         </div>
       </div>
 
+      <ProfileTags
+        profiles={profiles}
+        selected={item.profileIds}
+        onChange={onProfilesChange}
+      />
+
       {/* Portfolio : image + légende */}
       {isPortfolio && (
         <>
@@ -176,18 +198,18 @@ export function ItemEditor({
           />
           <div className="row">
             <div>
-              <label>Texte alternatif (accessibilité)</label>
+              <label>{t("f_alt")}</label>
               <input value={flat("alt")} onChange={(e) => setFlat("alt", e.target.value)} onBlur={() => persist(data)} />
             </div>
             <div>
-              <label>Lien (optionnel)</label>
+              <label>{t("f_link")}</label>
               <input value={flat("link")} onChange={(e) => setFlat("link", e.target.value)} onBlur={() => persist(data)} placeholder="https://…" />
             </div>
           </div>
           <div className="lang-cols">
             {langs.map((lang) => (
               <div key={lang} className="lang-col">
-                <span className="lang-tag">Légende — {LANG_NAMES[lang] ?? lang}</span>
+                <span className="lang-tag">{t("f_caption")} — {LANG_NAMES[lang] ?? lang}</span>
                 <input value={multi("caption", lang)} onChange={(e) => setMulti("caption", lang, e.target.value)} onBlur={() => persist(data)} />
               </div>
             ))}
@@ -200,7 +222,7 @@ export function ItemEditor({
         <>
           <div className="row">
             <div>
-              <label>Type</label>
+              <label>{t("f_type")}</label>
               <select value={flat("kind")} onChange={(e) => { setFlat("kind", e.target.value); }} onBlur={() => persist(data)}>
                 {CONTACT_KINDS.map((k) => (
                   <option key={k} value={k}>{k}</option>
@@ -208,14 +230,14 @@ export function ItemEditor({
               </select>
             </div>
             <div>
-              <label>Valeur</label>
+              <label>{t("f_value")}</label>
               <input value={flat("value")} onChange={(e) => setFlat("value", e.target.value)} onBlur={() => persist(data)} />
             </div>
           </div>
           <div className="lang-cols">
             {langs.map((lang) => (
               <div key={lang} className="lang-col">
-                <span className="lang-tag">Libellé — {LANG_NAMES[lang] ?? lang}</span>
+                <span className="lang-tag">{t("f_label")} — {LANG_NAMES[lang] ?? lang}</span>
                 <input value={multi("label", lang)} onChange={(e) => setMulti("label", lang, e.target.value)} onBlur={() => persist(data)} />
               </div>
             ))}
@@ -228,21 +250,21 @@ export function ItemEditor({
         <>
           <div className="row">
             <div>
-              <label>Fournisseur</label>
+              <label>{t("f_provider")}</label>
               <select value={flat("provider")} onChange={(e) => setFlat("provider", e.target.value)} onBlur={() => persist(data)}>
                 <option value="youtube">YouTube</option>
                 <option value="vimeo">Vimeo</option>
               </select>
             </div>
             <div style={{ flex: "2 1 300px" }}>
-              <label>URL</label>
+              <label>{t("f_url")}</label>
               <input value={flat("url")} onChange={(e) => setFlat("url", e.target.value)} onBlur={() => persist(data)} placeholder="https://youtube.com/watch?v=…" />
             </div>
           </div>
           <div className="lang-cols">
             {langs.map((lang) => (
               <div key={lang} className="lang-col">
-                <span className="lang-tag">Légende — {LANG_NAMES[lang] ?? lang}</span>
+                <span className="lang-tag">{t("f_caption")} — {LANG_NAMES[lang] ?? lang}</span>
                 <input value={multi("caption", lang)} onChange={(e) => setMulti("caption", lang, e.target.value)} onBlur={() => persist(data)} />
               </div>
             ))}
@@ -255,7 +277,7 @@ export function ItemEditor({
         <div className="row">
           {flatFields.map((f) => (
             <div key={f.key}>
-              <label>{f.label}</label>
+              <label>{FLAT_KEY[f.key] ? t(FLAT_KEY[f.key]) : f.label}</label>
               <input
                 type={f.type ?? "text"}
                 value={flat(f.key)}
@@ -277,7 +299,7 @@ export function ItemEditor({
               <span className="lang-tag">{LANG_NAMES[lang] ?? lang}</span>
               {multiFields.map((field) => (
                 <div key={field}>
-                  <label>{FIELD_LABELS[field] ?? field}</label>
+                  <label>{FIELD_KEY[field] ? t(FIELD_KEY[field]) : field}</label>
                   {field === "description" || field === "abstract" || field === "body" ? (
                     <textarea
                       value={nested(lang, field)}

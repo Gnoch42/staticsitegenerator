@@ -89,6 +89,16 @@ label { display: block; font-size: .8rem; color: var(--admin-muted); margin: .5r
 }
 .vis-select { color: var(--admin-muted); }
 
+/* Tags de profils par item */
+.profile-tags { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem; margin-bottom: .6rem; }
+.profile-all { font-style: italic; }
+.profile-chip {
+  padding: .15rem .6rem; border-radius: 999px; font-size: .8rem;
+  border: 1px solid var(--admin-border); background: var(--admin-surface);
+  color: var(--admin-muted); cursor: pointer;
+}
+.profile-chip.on { background: var(--admin-accent); border-color: var(--admin-accent); color: #fff; }
+
 .notice { padding: .6rem .8rem; border-radius: 8px; font-size: .85rem; margin-bottom: 1rem; }
 .notice-ok { background: #ecfdf5; color: #065f46; }
 .notice-info { background: #eff6ff; color: #1e40af; }
