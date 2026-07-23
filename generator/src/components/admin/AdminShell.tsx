@@ -2,6 +2,7 @@ import Link from "next/link";
 import { logoutAction } from "@/app/admin/actions";
 import { tAdmin, type AdminLang } from "@/lib/adminI18n";
 import { AdminI18nProvider } from "./AdminI18n";
+import { PublishButton } from "./PublishButton";
 
 const TABS = [
   { href: "/admin", key: "settings", label: "tab_settings" },
@@ -31,6 +32,7 @@ export function AdminShell({
             <a className="btn btn-sm" href="/preview" target="_blank" rel="noreferrer">
               {t("preview")} ↗
             </a>
+            <PublishButton />
             <form action={logoutAction}>
               <button className="btn btn-sm" type="submit">
                 {t("logout")}

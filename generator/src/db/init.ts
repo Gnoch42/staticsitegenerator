@@ -22,11 +22,12 @@ CREATE TABLE IF NOT EXISTS site (
   template_id       TEXT NOT NULL REFERENCES templates(id),
   languages         TEXT NOT NULL,
   default_language  TEXT NOT NULL,
-  owner_name        TEXT,
-  photo_url         TEXT,
-  admin_language    TEXT NOT NULL DEFAULT 'fr',
-  active_profile_id INTEGER,
-  published_at      INTEGER
+  owner_name         TEXT,
+  photo_url          TEXT,
+  photo_profile_ids  TEXT,
+  admin_language     TEXT NOT NULL DEFAULT 'fr',
+  active_profile_id  INTEGER,
+  published_at       INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS pages (
@@ -97,6 +98,7 @@ function migrate(conn: BetterSqlite3.Database): void {
 
   addColumn("site", "owner_name", "TEXT");
   addColumn("site", "photo_url", "TEXT");
+  addColumn("site", "photo_profile_ids", "TEXT");
   addColumn("site", "admin_language", "TEXT NOT NULL DEFAULT 'fr'");
   addColumn("site", "active_profile_id", "INTEGER");
   addColumn("sections", "visibility", "TEXT NOT NULL DEFAULT 'both'");

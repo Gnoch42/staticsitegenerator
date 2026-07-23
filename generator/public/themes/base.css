@@ -95,7 +95,7 @@ img { max-width: 100%; height: auto; }
 .ti-title { font-size: 1rem; margin: 0; }
 .ti-dates { color: var(--muted); font-size: .85rem; white-space: nowrap; }
 .ti-meta { color: var(--muted); font-size: .9rem; margin: .1rem 0; }
-.ti-desc { margin: .35rem 0 0; }
+.ti-desc { margin: .35rem 0 0; white-space: pre-line; }
 
 /* ── Compétences ── */
 .skills-list { list-style: none; margin: 0; padding: 0; }
@@ -109,7 +109,7 @@ img { max-width: 100%; height: auto; }
 /* ── Texte / résumé ── */
 .text-block { margin-bottom: 1rem; }
 .block-heading { font-size: 1rem; margin: 0 0 .3rem; }
-.block-text { margin: 0; }
+.block-text { margin: 0; white-space: pre-line; }
 
 /* ── Vidéo ── */
 .video-figure { margin: 0 0 1.5rem; }
@@ -125,7 +125,7 @@ img { max-width: 100%; height: auto; }
 .pub-year { color: var(--muted); font-size: .85rem; }
 .pub-authors { font-size: .9rem; }
 .pub-venue { font-size: .9rem; color: var(--muted); }
-.pub-abstract { margin: .4rem 0 0; font-size: .95rem; }
+.pub-abstract { margin: .4rem 0 0; font-size: .95rem; white-space: pre-line; }
 
 /* ── Portfolio (galerie d'images commentées) ── */
 .gallery {

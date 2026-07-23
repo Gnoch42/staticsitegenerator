@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import type { Multilingual, Visibility } from "@/lib/types";
+import type { Multilingual } from "@/lib/types";
 import { LANG_NAMES } from "@/lib/i18n";
 import { defaultItemData } from "@/lib/itemDefaults";
 import {
@@ -13,12 +13,10 @@ import {
   updateItem,
   deleteItem,
   reorderItems,
-  setItemVisibility,
   setItemProfiles,
 } from "@/app/admin/actions";
 import type { EditorSection, ProfileOption } from "./editorTypes";
 import { ItemEditor } from "./ItemEditor";
-import { VisibilitySelect } from "./VisibilitySelect";
 import { useAdminT } from "./AdminI18n";
 
 export function SectionCard({
@@ -52,26 +50,6 @@ export function SectionCard({
   }
   function saveTitle(title: Multilingual) {
     updateSection(section.id, { title });
-  }
-
-  function toggleEnabled() {
-    const enabled = !section.enabled;
-    onPatch({ enabled });
-    updateSection(section.id, { enabled });
-  }
-
-  function changeVisibility(visibility: Visibility) {
-    onPatch({ visibility });
-    updateSection(section.id, { visibility });
-  }
-
-  function changeItemVisibility(itemId: number, visibility: Visibility) {
-    onPatch({
-      items: section.items.map((it) =>
-        it.id === itemId ? { ...it, visibility } : it,
-      ),
-    });
-    setItemVisibility(itemId, visibility);
   }
 
   function changeItemProfiles(itemId: number, profileIds: number[]) {
@@ -138,20 +116,6 @@ export function SectionCard({
           <span className="muted">({section.type})</span>
         </div>
         <div className="toolbar">
-          <VisibilitySelect
-            value={section.visibility}
-            onChange={changeVisibility}
-            title={t("vis_section")}
-          />
-          <label style={{ display: "flex", gap: ".35rem", alignItems: "center", margin: 0 }}>
-            <input
-              type="checkbox"
-              style={{ width: "auto" }}
-              checked={section.enabled}
-              onChange={toggleEnabled}
-            />
-            <span className="muted">{t("enabled")}</span>
-          </label>
           <button className="btn btn-sm btn-danger" onClick={handleDelete}>
             {t("delete")}
           </button>
@@ -186,7 +150,6 @@ export function SectionCard({
                 onChange={(data) => handleItemChange(item.id, data)}
                 onDelete={() => handleItemDelete(item.id)}
                 onMove={(dir) => moveItem(i, dir)}
-                onVisibilityChange={(v) => changeItemVisibility(item.id, v)}
                 onProfilesChange={(ids) => changeItemProfiles(item.id, ids)}
               />
             ))}

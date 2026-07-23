@@ -33,15 +33,19 @@ Caddy · single-password auth (signed session cookie).
 ## Features
 - **Toggleable tabs** — each page can be enabled/disabled from Settings; disabled
   pages are removed from the published site.
-- **Name & profile photo** — shown in the site header and at the top of the CV
-  (all templates + PDF), with a clean fallback when no photo is set.
-- **CV profiles** — targeted variants (role/company). Each content item can be
-  tagged to zero, one, or several profiles (many-to-many). An item with **no
-  profile is always included**. The active profile drives both the published web
-  CV and the PDF; "Full CV" shows everything.
-- **Online / print visibility** — every section and item can be shown "Online +
-  PDF", "Online only", or "PDF only". The web render and the PDF filter accordingly,
-  so the two renders can differ (compact print layout, web-only extra content).
+- **Name & profile photo** — shown at the top of the CV (all templates + PDF), with
+  a clean fallback when no photo is set. The photo can be limited to specific
+  profiles, like any item.
+- **CV profiles** — targeted variants (role/company). Each content item (and the
+  photo) can be tagged to zero, one, or several profiles (many-to-many). An item
+  with **no profile is always included**. The active profile drives both the
+  published web CV and the PDF; "Full CV" shows everything. Profiles are the single
+  targeting mechanism (no separate per-item enable/visibility toggles).
+- **Automatic chronological order** — dated sections (experience, involvement,
+  education, publications) are sorted most-recent-first automatically.
+- **Locale-aware dates** — displayed month-year in French, year-month in English.
+- **Web vs PDF** — same content, but each render has its own layout (compact print
+  layout for the PDF); line breaks in text are preserved.
 - **Bilingual content** — per-item JSON, with a no-reload FR/EN toggle on the site.
 - **Bilingual admin UI** — the `/admin` interface itself is available in French or
   English, independently of the CV content language.

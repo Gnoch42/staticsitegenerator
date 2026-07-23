@@ -24,6 +24,7 @@ export const site = sqliteTable("site", {
   defaultLanguage: text("default_language").notNull(),
   ownerName: text("owner_name"),
   photoUrl: text("photo_url"),
+  photoProfileIds: text("photo_profile_ids", { mode: "json" }).$type<number[]>(),
   adminLanguage: text("admin_language").notNull().default("fr"),
   activeProfileId: integer("active_profile_id"),
   publishedAt: integer("published_at", { mode: "timestamp" }),

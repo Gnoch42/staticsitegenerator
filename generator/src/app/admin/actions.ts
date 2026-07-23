@@ -82,6 +82,16 @@ export async function setPhotoUrl(photoUrl: string) {
   revalidatePath("/admin", "layout");
 }
 
+/** Profils où la photo apparaît (vide = tous, comme les items). */
+export async function setPhotoProfiles(profileIds: number[]) {
+  await guard();
+  db.update(site)
+    .set({ photoProfileIds: profileIds })
+    .where(eq(site.id, 1))
+    .run();
+  revalidatePath("/admin", "layout");
+}
+
 export async function setAdminLanguage(adminLanguage: string) {
   await guard();
   const lang = adminLanguage === "en" ? "en" : "fr";

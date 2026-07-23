@@ -33,15 +33,19 @@ Caddy · auth par mot de passe unique (cookie de session signé).
 ## Fonctionnalités
 - **Onglets activables** — chaque page s'active/désactive depuis Réglages ; les
   pages désactivées sont retirées du site publié.
-- **Nom et photo de profil** — affichés en en-tête du site et en haut du CV (tous
-  templates + PDF), avec repli propre si aucune photo.
-- **Profils de CV** — variantes ciblées (poste/entreprise). Chaque item peut être
-  associé à 0, 1 ou plusieurs profils (plusieurs-à-plusieurs). Un item **sans profil
-  est toujours inclus**. Le profil actif pilote le CV web publié ET le PDF ; « CV
-  complet » montre tout.
-- **Visibilité en ligne / imprimé** — chaque section et item peut être « En ligne +
-  PDF », « En ligne seulement » ou « PDF seulement ». Les deux rendus filtrent en
-  conséquence et peuvent donc différer (PDF compact, contenu web-only).
+- **Nom et photo de profil** — affichés en haut du CV (tous templates + PDF), avec
+  repli propre si aucune photo. La photo peut être limitée à certains profils, comme
+  n'importe quel item.
+- **Profils de CV** — variantes ciblées (poste/entreprise). Chaque item (et la photo)
+  peut être associé à 0, 1 ou plusieurs profils (plusieurs-à-plusieurs). Un item
+  **sans profil est toujours inclus**. Le profil actif pilote le CV web publié ET le
+  PDF ; « CV complet » montre tout. Les profils sont le seul mécanisme de ciblage
+  (plus de bascule activation/visibilité par item).
+- **Tri chronologique automatique** — les sections datées (expériences, implications,
+  éducation, publications) sont triées du plus récent au plus ancien.
+- **Dates localisées** — affichées mois-année en français, année-mois en anglais.
+- **Web vs PDF** — même contenu, mais chaque rendu a sa propre mise en page (PDF
+  compact) ; les sauts de ligne du texte sont préservés.
 - **Contenu bilingue** — JSON par item, avec bascule FR/EN sans rechargement.
 - **Interface admin bilingue** — l'interface `/admin` est disponible en français ou
   en anglais, indépendamment de la langue du contenu.

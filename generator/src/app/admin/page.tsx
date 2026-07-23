@@ -5,7 +5,6 @@ import { tAdmin, type AdminLang } from "@/lib/adminI18n";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { TemplateSelector } from "@/components/admin/TemplateSelector";
 import { LanguageSettings } from "@/components/admin/LanguageSettings";
-import { PublishBar } from "@/components/admin/PublishBar";
 import { OwnerNameField } from "@/components/admin/OwnerNameField";
 import { PhotoField } from "@/components/admin/PhotoField";
 import { AdminLanguageSelect } from "@/components/admin/AdminLanguageSelect";
@@ -22,14 +21,16 @@ export default async function AdminHome() {
 
   return (
     <AdminShell active="settings" lang={lang}>
-      <PublishBar publishedAt={full.site.publishedAt?.toISOString() ?? null} />
-
       <div className="card">
         <div className="card-head">
           <span className="card-title">{at("identity_title")}</span>
         </div>
         <OwnerNameField initial={full.site.ownerName ?? ""} />
-        <PhotoField initial={full.site.photoUrl ?? ""} />
+        <PhotoField
+          initial={full.site.photoUrl ?? ""}
+          profiles={full.profiles.map((p) => ({ id: p.id, name: p.name }))}
+          photoProfileIds={full.site.photoProfileIds ?? []}
+        />
       </div>
 
       <div className="card">

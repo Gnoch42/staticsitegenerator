@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import type { SectionType, Visibility } from "@/lib/types";
+import type { SectionType } from "@/lib/types";
 import { LANG_NAMES } from "@/lib/i18n";
 import { MULTILINGUAL_FIELDS, FLAT_FIELDS } from "@/lib/itemDefaults";
 import { translateAction } from "@/app/admin/actions";
 import type { EditorItem, ProfileOption } from "./editorTypes";
-import { VisibilitySelect } from "./VisibilitySelect";
 import { ImageUpload } from "./ImageUpload";
 import { ProfileTags } from "./ProfileTags";
 import { useAdminT } from "./AdminI18n";
@@ -54,7 +53,6 @@ export function ItemEditor({
   onChange,
   onDelete,
   onMove,
-  onVisibilityChange,
   onProfilesChange,
 }: {
   sectionType: SectionType;
@@ -66,7 +64,6 @@ export function ItemEditor({
   onChange: (data: Record<string, unknown>) => void;
   onDelete: () => void;
   onMove: (dir: -1 | 1) => void;
-  onVisibilityChange: (v: Visibility) => void;
   onProfilesChange: (ids: number[]) => void;
 }) {
   const t = useAdminT();
@@ -153,11 +150,6 @@ export function ItemEditor({
       <div className="card-head" style={{ marginBottom: ".5rem" }}>
         <span className="muted">{t("item_word")} {index + 1}</span>
         <div className="toolbar">
-          <VisibilitySelect
-            value={item.visibility}
-            onChange={onVisibilityChange}
-            title={t("vis_item")}
-          />
           {langs.length > 1 && (
             <button className="btn btn-sm" onClick={translateItem} disabled={translating}>
               {translating ? "…" : t("translate")}
@@ -197,10 +189,6 @@ export function ItemEditor({
             }}
           />
           <div className="row">
-            <div>
-              <label>{t("f_alt")}</label>
-              <input value={flat("alt")} onChange={(e) => setFlat("alt", e.target.value)} onBlur={() => persist(data)} />
-            </div>
             <div>
               <label>{t("f_link")}</label>
               <input value={flat("link")} onChange={(e) => setFlat("link", e.target.value)} onBlur={() => persist(data)} placeholder="https://…" />
@@ -300,7 +288,7 @@ export function ItemEditor({
               {multiFields.map((field) => (
                 <div key={field}>
                   <label>{FIELD_KEY[field] ? t(FIELD_KEY[field]) : field}</label>
-                  {field === "description" || field === "abstract" || field === "body" ? (
+                  {field === "description" || field === "abstract" || field === "body" || field === "text" ? (
                     <textarea
                       value={nested(lang, field)}
                       onChange={(e) => setNested(lang, field, e.target.value)}

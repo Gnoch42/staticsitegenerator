@@ -3,6 +3,7 @@ import type { ReactElement } from "react";
 import type { FullSite, PageWithSections } from "./queries";
 import { getTemplate } from "@/templates";
 import { buildNav } from "@/components/render/SiteHeader";
+import { isInProfile } from "@/lib/types";
 import { LANG_TOGGLE_JS } from "./clientScript";
 import { renderElementToString } from "./renderToString";
 
@@ -33,6 +34,8 @@ export function renderPageElement(
   const nav = buildNav(full.pages, page.type, opts.linkFor);
   const profileId =
     opts.profileId !== undefined ? opts.profileId : full.site.activeProfileId;
+  // La photo suit les mêmes règles de profil que les items.
+  const photoVisible = isInProfile(full.site.photoProfileIds ?? [], profileId);
   return (
     <Template
       page={page}
@@ -41,7 +44,7 @@ export function renderPageElement(
       activeLang={activeLang}
       mode={opts.mode ?? "online"}
       ownerName={full.site.ownerName}
-      photoUrl={full.site.photoUrl}
+      photoUrl={photoVisible ? full.site.photoUrl : null}
       profileId={profileId}
       showPdf={opts.showPdf}
       pdfHref={opts.pdfHref}

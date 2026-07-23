@@ -39,7 +39,7 @@ export function defaultItemData(
     case "video_embed":
       return { provider: "youtube", url: "", caption: label() };
     case "portfolio_gallery":
-      return { image: "", alt: "", link: "", caption: label() };
+      return { image: "", link: "", caption: label() };
     case "publication_list":
       return {
         ...perLang({ title: "", venue: "", abstract: "" }),
