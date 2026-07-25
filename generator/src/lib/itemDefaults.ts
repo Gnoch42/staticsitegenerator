@@ -30,8 +30,17 @@ export function defaultItemData(
         start_date: "",
         end_date: "",
       };
+    case "formation":
+      return {
+        ...perLang({ title: "", organization: "", description: "" }),
+        issue_date: "",
+        expiry_date: "",
+      };
     case "distinctions":
-      return perLang({ title: "", description: "" });
+      return {
+        ...perLang({ title: "", organization: "", description: "" }),
+        year: "",
+      };
     case "skills":
       return perLang({ category: "", value: "" });
     case "hobbies":
@@ -59,7 +68,8 @@ export const MULTILINGUAL_FIELDS: Partial<Record<SectionType, string[]>> = {
   experience: ["title", "organization", "location", "description"],
   involvement: ["title", "organization", "location", "description"],
   education: ["title", "organization", "location", "description"],
-  distinctions: ["title", "description"],
+  formation: ["title", "organization", "description"],
+  distinctions: ["title", "organization", "description"],
   skills: ["category", "value"],
   hobbies: ["value"],
   publication_list: ["title", "venue", "abstract"],
@@ -81,6 +91,11 @@ export const FLAT_FIELDS: Partial<
     { key: "start_date", label: "Début (AAAA-MM)" },
     { key: "end_date", label: "Fin (AAAA-MM)" },
   ],
+  formation: [
+    { key: "issue_date", label: "Émission (AAAA-MM)" },
+    { key: "expiry_date", label: "Expiration (AAAA-MM)" },
+  ],
+  distinctions: [{ key: "year", label: "Année", type: "number" }],
   publication_list: [
     { key: "year", label: "Année", type: "number" },
     { key: "authors", label: "Auteurs" },

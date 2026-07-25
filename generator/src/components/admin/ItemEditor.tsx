@@ -28,6 +28,8 @@ const FIELD_KEY: Record<string, string> = {
 const FLAT_KEY: Record<string, string> = {
   start_date: "f_start",
   end_date: "f_end",
+  issue_date: "f_issue",
+  expiry_date: "f_expiry",
   year: "f_year",
   authors: "f_authors",
   link: "f_doi",

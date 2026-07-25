@@ -43,6 +43,7 @@ export type SectionType =
   | "experience"
   | "involvement"
   | "education"
+  | "formation"
   | "skills"
   | "distinctions"
   | "hobbies"
@@ -64,6 +65,7 @@ export const SECTIONS_BY_PAGE: Record<PageType, SectionType[]> = {
     "experience",
     "involvement",
     "education",
+    "formation",
     "skills",
     "distinctions",
     "hobbies",
@@ -127,6 +129,7 @@ export const SECTION_LABELS: Record<SectionType, Multilingual> = {
   experience: { fr: "Expériences", en: "Experience" },
   involvement: { fr: "Implications", en: "Involvement" },
   education: { fr: "Éducation", en: "Education" },
+  formation: { fr: "Formations", en: "Training / Certifications" },
   skills: { fr: "Compétences", en: "Skills" },
   distinctions: { fr: "Distinctions", en: "Distinctions" },
   hobbies: { fr: "Loisirs", en: "Hobbies" },

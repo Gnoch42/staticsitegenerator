@@ -14,3 +14,6 @@
 }
 .theme-minimal .page { padding-top: 1rem; }
 .theme-minimal .sec { margin-bottom: 2.75rem; }
+/* Minimaliste : pas d'icônes de contact, tirets discrets */
+.theme-minimal .contact-icon { display: none; }
+.theme-minimal .li-dash { color: var(--muted); font-weight: 400; }

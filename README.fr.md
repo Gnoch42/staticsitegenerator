@@ -50,6 +50,12 @@ Caddy · auth par mot de passe unique (cookie de session signé).
 - **Interface admin bilingue** — l'interface `/admin` est disponible en français ou
   en anglais, indépendamment de la langue du contenu.
 - **Portfolio** — galerie d'images commentées, par **URL** externe ou **upload**.
+- **Sections du CV** — coordonnées, résumé, expériences, implications, éducation,
+  formations/certifications (avec dates d'émission/expiration), compétences,
+  distinctions (avec organisation + année), loisirs, personnalisée.
+- **Détails stylables par template** — les coordonnées affichent des icônes
+  (enveloppe, téléphone…) et les tirets de début de ligne sont balisés ; les deux se
+  restylent ou se masquent par template via CSS (`.contact-icon`, `.li-dash`).
 - **5 templates** — minimal, structured, academic, modern, slate.
 
 ## Lancer en local

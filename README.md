@@ -50,6 +50,12 @@ Caddy · single-password auth (signed session cookie).
 - **Bilingual admin UI** — the `/admin` interface itself is available in French or
   English, independently of the CV content language.
 - **Portfolio** — commented image gallery, by external **URL** or **file upload**.
+- **CV sections** — contact, summary, experience, involvement, education,
+  training/certifications (with issue/expiry dates), skills, distinctions (with
+  organization + year), hobbies, custom.
+- **Template-stylable details** — contact entries show icons (envelope, phone…)
+  and leading dashes in text are wrapped for styling; both can be restyled or hidden
+  per template via CSS (`.contact-icon`, `.li-dash`).
 - **5 templates** — minimal, structured, academic, modern, slate.
 
 ## Run locally

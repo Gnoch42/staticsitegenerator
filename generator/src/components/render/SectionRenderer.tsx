@@ -2,6 +2,8 @@ import type { SectionWithItems, ItemWithProfiles } from "@/lib/queries";
 import type { Multilingual, SectionType } from "@/lib/types";
 import { isInProfile } from "@/lib/types";
 import { I18n, pickField, hasContent } from "./I18n";
+import { FormattedText } from "./FormattedText";
+import { ContactIcon } from "./ContactIcon";
 
 interface Ctx {
   langs: string[];
@@ -52,6 +54,7 @@ function renderBody(section: SectionWithItems, ctx: Ctx) {
     case "experience":
     case "involvement":
     case "education":
+    case "formation":
     case "distinctions":
       return <TimelineList section={section} ctx={ctx} />;
     case "skills":
@@ -113,6 +116,7 @@ function ContactList({ section, ctx }: { section: SectionWithItems; ctx: Ctx }) 
         const href = contactHref(d.kind, d.value);
         return (
           <li key={item.id} className="contact-item" data-kind={d.kind}>
+            <ContactIcon kind={d.kind} />
             <span className="contact-label">
               <I18n field={d.label} langs={ctx.langs} />
             </span>
@@ -145,9 +149,7 @@ function TextBlocks({ section, ctx }: { section: SectionWithItems; ctx: Ctx }) {
                 <I18n field={heading} langs={ctx.langs} />
               </h3>
             )}
-            <p className="block-text">
-              <I18n field={text} langs={ctx.langs} />
-            </p>
+            <FormattedText field={text} langs={ctx.langs} className="block-text" />
           </div>
         );
       })}
@@ -165,9 +167,24 @@ function TimelineList({ section, ctx }: { section: SectionWithItems; ctx: Ctx })
         const org = pickField(d, ctx.langs, "organization");
         const loc = pickField(d, ctx.langs, "location");
         const desc = pickField(d, ctx.langs, "description");
-        const start = typeof d.start_date === "string" ? d.start_date : "";
-        const end = typeof d.end_date === "string" ? d.end_date : "";
-        const dates = dateRangeMultilingual(start, end, ctx.langs);
+        // start/end couvrent aussi les dates d'émission/expiration (formation).
+        const start =
+          (typeof d.start_date === "string" && d.start_date) ||
+          (typeof d.issue_date === "string" && d.issue_date) ||
+          "";
+        const end =
+          (typeof d.end_date === "string" && d.end_date) ||
+          (typeof d.expiry_date === "string" && d.expiry_date) ||
+          "";
+        const yearOnly =
+          d.year !== undefined && d.year !== "" ? String(d.year) : "";
+        // Si pas de plage de dates mais une année (distinctions) : afficher l'année.
+        const dates =
+          start || end
+            ? dateRangeMultilingual(start, end, ctx.langs)
+            : yearOnly
+              ? Object.fromEntries(ctx.langs.map((l) => [l, yearOnly]))
+              : {};
         return (
           <li key={item.id} className="timeline-item">
             <div className="ti-head">
@@ -192,9 +209,7 @@ function TimelineList({ section, ctx }: { section: SectionWithItems; ctx: Ctx })
               </div>
             )}
             {hasContent(desc) && (
-              <p className="ti-desc">
-                <I18n field={desc} langs={ctx.langs} />
-              </p>
+              <FormattedText field={desc} langs={ctx.langs} className="ti-desc" />
             )}
           </li>
         );
@@ -318,9 +333,7 @@ function PublicationList({ section, ctx }: { section: SectionWithItems; ctx: Ctx
               </div>
             )}
             {hasContent(abstract) && (
-              <p className="pub-abstract">
-                <I18n field={abstract} langs={ctx.langs} />
-              </p>
+              <FormattedText field={abstract} langs={ctx.langs} className="pub-abstract" />
             )}
           </li>
         );
@@ -361,7 +374,12 @@ function embedUrl(provider?: string, url?: string): string | undefined {
 }
 
 // ── Tri chronologique (plus récent en haut) pour les sections datées ──
-const DATED_SECTIONS: SectionType[] = ["experience", "involvement", "education"];
+const DATED_SECTIONS: SectionType[] = [
+  "experience",
+  "involvement",
+  "education",
+  "formation",
+];
 
 function sortItems(
   type: SectionType,
@@ -370,17 +388,17 @@ function sortItems(
   if (DATED_SECTIONS.includes(type)) {
     return [...items].sort((a, b) => recency(b.data) - recency(a.data));
   }
-  if (type === "publication_list") {
+  if (type === "publication_list" || type === "distinctions") {
     return [...items].sort((a, b) => pubYear(b.data) - pubYear(a.data));
   }
   return items;
 }
 
-/** Clé de récence d'un item daté = max(start, end) en (année*12+mois). */
+/** Clé de récence d'un item daté = max(dates) en (année*12+mois). */
 function recency(data: Record<string, unknown>): number {
-  const s = dateKey(typeof data.start_date === "string" ? data.start_date : "");
-  const e = dateKey(typeof data.end_date === "string" ? data.end_date : "");
-  return Math.max(s, e);
+  const dates = ["start_date", "end_date", "issue_date", "expiry_date"]
+    .map((k) => (typeof data[k] === "string" ? dateKey(data[k] as string) : 0));
+  return Math.max(0, ...dates);
 }
 function pubYear(data: Record<string, unknown>): number {
   return typeof data.year === "number" ? data.year : 0;

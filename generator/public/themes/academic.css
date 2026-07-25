@@ -24,3 +24,6 @@
 }
 .theme-academic .pub-title { font-size: 1.05rem; }
 .theme-academic .pub-abstract { text-align: justify; }
+/* Académique : pas d'icônes de contact, tirets en em-dash sobre */
+.theme-academic .contact-icon { display: none; }
+.theme-academic .li-dash { color: var(--fg); }

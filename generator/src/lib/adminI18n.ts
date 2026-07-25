@@ -148,6 +148,8 @@ export const ADMIN_STRINGS: Dict = {
   f_abstract: { fr: "Résumé", en: "Abstract" },
   f_start: { fr: "Début (AAAA-MM)", en: "Start (YYYY-MM)" },
   f_end: { fr: "Fin (AAAA-MM)", en: "End (YYYY-MM)" },
+  f_issue: { fr: "Émission (AAAA-MM)", en: "Issued (YYYY-MM)" },
+  f_expiry: { fr: "Expiration (AAAA-MM)", en: "Expires (YYYY-MM)" },
   f_year: { fr: "Année", en: "Year" },
   f_authors: { fr: "Auteurs", en: "Authors" },
   f_doi: { fr: "Lien (DOI/URL)", en: "Link (DOI/URL)" },

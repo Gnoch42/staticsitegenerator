@@ -1,13 +1,50 @@
 import "server-only";
 import { promises as fs } from "node:fs";
-import { join } from "node:path";
+import { join, extname } from "node:path";
 import { chromium } from "playwright";
 import { getFullSite } from "./queries";
 import { getTemplate } from "@/templates";
 import { renderPageElement } from "./render";
 import { renderElementToString } from "./renderToString";
+import { uploadsDir, safeFileName } from "./paths";
 
 const THEMES_DIR = join(process.cwd(), "public", "themes");
+
+const IMG_MIME: Record<string, string> = {
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".png": "image/png",
+  ".webp": "image/webp",
+  ".gif": "image/gif",
+  ".avif": "image/avif",
+  ".svg": "image/svg+xml",
+};
+
+/**
+ * Le PDF est rendu via setContent() sans URL de base : les chemins
+ * `/uploads/<fichier>` ne se résolvent pas. On inline donc ces images
+ * (photo de profil, portfolio) en data URI pour qu'elles apparaissent.
+ */
+async function inlineUploads(html: string): Promise<string> {
+  const files = new Set<string>();
+  for (const m of html.matchAll(/\/uploads\/([A-Za-z0-9._-]+)/g)) {
+    files.add(m[1]);
+  }
+  const dir = uploadsDir();
+  const replacements = new Map<string, string>();
+  for (const file of files) {
+    try {
+      const buf = await fs.readFile(join(dir, safeFileName(file)));
+      const mime = IMG_MIME[extname(file).toLowerCase()] ?? "application/octet-stream";
+      replacements.set(file, `data:${mime};base64,${buf.toString("base64")}`);
+    } catch {
+      // fichier introuvable : on laisse le chemin tel quel
+    }
+  }
+  return html.replace(/\/uploads\/([A-Za-z0-9._-]+)/g, (whole, file) =>
+    replacements.get(file) ?? whole,
+  );
+}
 
 /**
  * Rend la page CV en PDF A4 via Playwright, avec le CSS d'impression
@@ -42,10 +79,11 @@ export async function renderCvPdf(
     }),
   );
 
+  const inlinedBody = await inlineUploads(body);
   const html = `<!doctype html><html lang="${onlyLang}"><head>
 <meta charset="utf-8">
 <style>${baseCss}\n${themeCss}\n${printCss}</style>
-</head><body>${body}</body></html>`;
+</head><body>${inlinedBody}</body></html>`;
 
   const browser = await chromium.launch({ args: ["--no-sandbox"] });
   try {
