@@ -156,9 +156,13 @@ seed & migration: [`generator/src/db/init.ts`](generator/src/db/init.ts).
 Two built-in templates — **structured** (two columns, reference CV wireframe) and
 **academic** (serif) — plus any you create. All consume the **same** data model and
 render both a web layout and a compact **print layout** for the PDF. In print, a
-two-column template keeps a **full-height sidebar column on the first page**, and the
-main content then fills the full width on the following pages (no column stopping
-mid-page, no half-empty reserved column).
+two-column template renders the sidebar as a **full-height colored panel** that
+reaches the bottom of every full page (the background is painted as a gradient band
+so it repeats across page breaks), while the main content stays in its right column
+throughout. On the last, partially filled page the panel matches the content height.
+(If the sidebar is *longer* than the main column by more than a page, the panel only
+covers the pages the main content spans — keep the work history at least as long as
+the sidebar for a full band on every page.)
 
 ### YAML templates
 **All templates — including the built-ins — are YAML configs**, editable from the

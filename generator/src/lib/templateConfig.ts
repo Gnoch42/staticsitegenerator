@@ -369,17 +369,27 @@ export function generateThemeCss(config: TemplateConfig): string {
         );
       }
     }
-    // IMPRESSION : sidebar flottante (colonne à gauche) qui occupe TOUTE la
-    // hauteur de la (première) page — pas de colonne qui s'arrête au milieu.
-    // Le contenu principal se place à droite sur cette page, puis reprend
-    // pleine largeur ensuite (donc pas de demi-colonne vide sur la page suivante).
+    // IMPRESSION : la grille ne s'étire pas en panneau pleine hauteur à travers
+    // les sauts de page (limite de Chromium). On peint donc le fond de la sidebar
+    // via un DÉGRADÉ sur le conteneur (les fonds, eux, se répètent bien sur chaque
+    // page) et on bloque le contenu principal dans sa colonne de droite avec une
+    // marge (il ne récupère jamais la largeur de la sidebar). Résultat : un
+    // panneau latéral coloré qui descend jusqu'en bas de CHAQUE page, deux colonnes
+    // sur toute la hauteur du document.
     const floatDir = right ? "right" : "left";
-    const marginSide = right ? "margin-left" : "margin-right";
+    const mainMargin = right ? "margin-right" : "margin-left";
+    const gradDir = right ? "to left" : "to right";
     rules.push(
       `@media print{` +
-        `.theme-yaml .two-col{display:block;}` +
-        `.theme-yaml .col-sidebar{float:${floatDir};width:${c.layout.sidebarWidth};${marginSide}:${c.layout.columnGap};grid-column:auto;}` +
-        `.theme-yaml .col-main{grid-column:auto;padding:0;}` +
+        `.theme-yaml .two-col{display:block;` +
+        (c.colors.sidebarBg
+          ? `background:linear-gradient(${gradDir},${c.colors.sidebarBg} 0 ${c.layout.sidebarWidth},transparent ${c.layout.sidebarWidth});`
+          : "") +
+        `}` +
+        `.theme-yaml .col-sidebar{float:${floatDir};width:${c.layout.sidebarWidth};grid-column:auto;border-radius:0;` +
+        (c.colors.sidebarBg ? `background:transparent;` : "") +
+        `}` +
+        `.theme-yaml .col-main{grid-column:auto;${mainMargin}:calc(${c.layout.sidebarWidth} + ${c.layout.columnGap});}` +
         `}`,
     );
     rules.push(
