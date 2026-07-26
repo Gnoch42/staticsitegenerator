@@ -37,6 +37,8 @@ export const ADMIN_STRINGS: Dict = {
   },
   content_import: { fr: "Enregistrer le YAML", en: "Save YAML" },
   content_reload: { fr: "Recharger depuis la base", en: "Reload from database" },
+  content_download: { fr: "Télécharger .yaml", en: "Download .yaml" },
+  content_upload: { fr: "Importer un fichier…", en: "Import a file…" },
   content_confirm: {
     fr: "Remplacer le contenu du site par ce YAML ?",
     en: "Replace the site content with this YAML?",

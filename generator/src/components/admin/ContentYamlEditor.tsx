@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { importContentYaml } from "@/app/admin/actions";
 import { parseContentYaml } from "@/lib/contentYaml";
@@ -13,8 +13,29 @@ export function ContentYamlEditor({ initial }: { initial: string }) {
   const [pending, setPending] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const parseErr = parseContentYaml(yaml).error;
+
+  function download() {
+    const blob = new Blob([yaml], { type: "application/x-yaml" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "contenu-cv.yaml";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function onFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (f) {
+      setYaml(await f.text());
+      setSaved(false);
+      setError(null);
+    }
+    if (fileRef.current) fileRef.current.value = "";
+  }
 
   async function save() {
     if (parseErr) return;
@@ -60,6 +81,20 @@ export function ContentYamlEditor({ initial }: { initial: string }) {
         <a className="btn" href="/admin/content">
           {t("content_reload")}
         </a>
+        <span className="spacer" />
+        <button className="btn" onClick={download}>
+          {t("content_download")}
+        </button>
+        <button className="btn" onClick={() => fileRef.current?.click()}>
+          {t("content_upload")}
+        </button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept=".yaml,.yml,text/yaml,application/x-yaml"
+          style={{ display: "none" }}
+          onChange={onFile}
+        />
         {saved && <span className="muted">{t("content_saved")}</span>}
       </div>
     </div>
