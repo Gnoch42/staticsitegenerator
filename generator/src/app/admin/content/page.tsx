@@ -15,7 +15,10 @@ export default async function ContentPage() {
 
   return (
     <AdminShell active="content" lang={lang}>
-      <ContentYamlEditor initial={yaml} />
+      <ContentYamlEditor
+        initial={yaml}
+        profiles={full.profiles.map((p) => ({ id: p.id, name: p.name }))}
+      />
     </AdminShell>
   );
 }

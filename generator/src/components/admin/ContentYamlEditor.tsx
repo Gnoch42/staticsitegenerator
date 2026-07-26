@@ -2,29 +2,50 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { importContentYaml } from "@/app/admin/actions";
+import { importContentYaml, exportContentYaml } from "@/app/admin/actions";
 import { parseContentYaml } from "@/lib/contentYaml";
+import type { ProfileOption } from "./editorTypes";
 import { useAdminT } from "./AdminI18n";
 
-export function ContentYamlEditor({ initial }: { initial: string }) {
+export function ContentYamlEditor({
+  initial,
+  profiles,
+}: {
+  initial: string;
+  profiles: ProfileOption[];
+}) {
   const t = useAdminT();
   const router = useRouter();
   const [yaml, setYaml] = useState(initial);
   const [pending, setPending] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [exportProfile, setExportProfile] = useState<string>("");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const parseErr = parseContentYaml(yaml).error;
 
-  function download() {
-    const blob = new Blob([yaml], { type: "application/x-yaml" });
+  function downloadText(text: string, filename: string) {
+    const blob = new Blob([text], { type: "application/x-yaml" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "contenu-cv.yaml";
+    a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  function download() {
+    downloadText(yaml, "contenu-cv.yaml");
+  }
+
+  async function downloadProfile() {
+    if (!exportProfile) return;
+    const id = Number(exportProfile);
+    const yamlForProfile = await exportContentYaml(id);
+    const name = profiles.find((p) => p.id === id)?.name ?? "profil";
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    downloadText(yamlForProfile, `contenu-${slug || "profil"}.yaml`);
   }
 
   async function onFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -97,6 +118,29 @@ export function ContentYamlEditor({ initial }: { initial: string }) {
         />
         {saved && <span className="muted">{t("content_saved")}</span>}
       </div>
+
+      {profiles.length > 0 && (
+        <div className="toolbar" style={{ marginTop: ".6rem" }}>
+          <label style={{ margin: 0 }} className="muted">
+            {t("content_export_profile")}
+          </label>
+          <select
+            value={exportProfile}
+            onChange={(e) => setExportProfile(e.target.value)}
+            style={{ maxWidth: 240 }}
+          >
+            <option value="">—</option>
+            {profiles.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+          <button className="btn" onClick={downloadProfile} disabled={!exportProfile}>
+            {t("content_export_profile_btn")}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

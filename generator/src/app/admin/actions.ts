@@ -15,8 +15,9 @@ import {
   itemProfiles,
 } from "@/db/schema";
 import { STARTER_YAML, parseTemplateConfig } from "@/lib/templateConfig";
-import { parseContentYaml } from "@/lib/contentYaml";
+import { parseContentYaml, buildContentYaml } from "@/lib/contentYaml";
 import { applyContent } from "@/lib/contentImport";
+import { getFullSite } from "@/lib/queries";
 import { slugify } from "@/lib/slug";
 import {
   verifyPassword,
@@ -215,6 +216,15 @@ export async function importContentYaml(
 
   revalidatePath("/admin", "layout");
   return { ok: true };
+}
+
+/** Contenu YAML, filtré pour un profil (null = tout). Pour l'export. */
+export async function exportContentYaml(
+  profileId: number | null,
+): Promise<string> {
+  await guard();
+  const full = await getFullSite();
+  return buildContentYaml(full, profileId);
 }
 
 // ── Sections ──

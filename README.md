@@ -194,6 +194,8 @@ all pages) can be edited as YAML from the admin (Content tab). The database stay
 single source of truth: the YAML editor loads the current content, and saving rewrites
 it transactionally — the graphical editor stays in sync. Items reference profiles by
 name (auto-created if new). Only the pages present in the YAML are replaced.
+You can **download** the content as a `.yaml` file, **import** one back, or **export a
+profile-filtered** YAML (only that profile's items).
 Serializer/parser: [`generator/src/lib/contentYaml.ts`](generator/src/lib/contentYaml.ts).
 
 ## Portfolio & uploaded images

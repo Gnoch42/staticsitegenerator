@@ -196,6 +196,8 @@ La base reste la source de vérité : l'éditeur YAML charge le contenu actuel, 
 l'enregistrement le réécrit de façon transactionnelle — l'éditeur graphique reste
 synchronisé. Les items référencent les profils par nom (créés au besoin). Seules les
 pages présentes dans le YAML sont remplacées.
+Tu peux **télécharger** le contenu en `.yaml`, en **réimporter** un, ou **exporter le
+YAML filtré par profil** (seulement les items de ce profil).
 Sérialiseur/parseur : [`generator/src/lib/contentYaml.ts`](generator/src/lib/contentYaml.ts).
 
 ## Portfolio & images téléversées

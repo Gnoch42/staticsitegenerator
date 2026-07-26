@@ -3,6 +3,7 @@ import type { FullSite } from "./queries";
 import {
   SECTIONS_BY_PAGE,
   isSectionAllowed,
+  isInProfile,
   type PageType,
   type SectionType,
   type Multilingual,
@@ -30,16 +31,32 @@ export interface ParsedContent {
   pages: { type: PageType; sections: ParsedSection[] }[];
 }
 
-/** Base → YAML éditable (toutes les pages, dans l'ordre). */
-export function buildContentYaml(full: FullSite): string {
+/**
+ * Base → YAML éditable (toutes les pages, dans l'ordre).
+ * Si `profileId` est fourni (export filtré), ne garde que les items visibles
+ * pour ce profil et retire les sections devenues vides.
+ */
+export function buildContentYaml(
+  full: FullSite,
+  profileId?: number | null,
+): string {
   const nameById = new Map(full.profiles.map((p) => [p.id, p.name]));
+  const filtered = profileId !== undefined && profileId !== null;
   const doc: Record<string, unknown> = {};
 
   for (const page of full.pages) {
-    doc[page.type] = page.sections.map((s) => {
+    let secs = page.sections.map((s) => ({
+      s,
+      items: s.items.filter((it) =>
+        isInProfile(it.profileIds, profileId ?? null),
+      ),
+    }));
+    if (filtered) secs = secs.filter((x) => x.items.length > 0);
+
+    doc[page.type] = secs.map(({ s, items }) => {
       const section: Record<string, unknown> = { section: s.type };
       if (s.title && Object.keys(s.title).length) section.title = s.title;
-      section.items = s.items.map((it) => {
+      section.items = items.map((it) => {
         const names = it.profileIds
           .map((id) => nameById.get(id))
           .filter((n): n is string => !!n);
