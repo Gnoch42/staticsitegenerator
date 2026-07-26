@@ -188,8 +188,10 @@ contact: { show_icons: false }
 page: { size: us-letter }
 ```
 
-The YAML is parsed into CSS variables + rules (scoped to `.theme-yaml`) and a layout,
-applied to both the web render and the PDF. Config/generator:
+A `display:` block toggles elements per template (e.g. `contact_labels: false` to
+show only the icon + value, or hide `dates`, `section_titles`, `descriptions`,
+`skill_categories`…). The YAML is parsed into CSS variables + rules (scoped to
+`.theme-yaml`) and a layout, applied to both the web render and the PDF. Config/generator:
 [`generator/src/lib/templateConfig.ts`](generator/src/lib/templateConfig.ts).
 
 ## Content as YAML

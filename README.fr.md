@@ -189,8 +189,10 @@ contact: { show_icons: false }
 page: { size: us-letter }
 ```
 
-Le YAML est converti en variables/règles CSS (scopées `.theme-yaml`) + une mise en
-page, appliquées au rendu web ET au PDF. Config/générateur :
+Un bloc `display:` affiche/masque des éléments par template (ex. `contact_labels: false`
+pour ne garder que l'icône + la valeur, ou masquer `dates`, `section_titles`,
+`descriptions`, `skill_categories`…). Le YAML est converti en variables/règles CSS
+(scopées `.theme-yaml`) + une mise en page, appliquées au rendu web ET au PDF. Config/générateur :
 [`generator/src/lib/templateConfig.ts`](generator/src/lib/templateConfig.ts).
 
 ## Contenu en YAML

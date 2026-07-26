@@ -45,6 +45,17 @@ export interface TemplateConfig {
   };
   bullets: { marker: string };
   contact: { showIcons: boolean };
+  /** Afficher/masquer des éléments du rendu (par template). */
+  display: {
+    sectionTitles: boolean;
+    contactLabels: boolean;
+    dates: boolean;
+    organizations: boolean;
+    descriptions: boolean;
+    skillCategories: boolean;
+    skillLevels: boolean;
+    publicationAbstracts: boolean;
+  };
   /** CSS libre ajouté à la fin (scopé `.theme-yaml`) — échappatoire pour
    *  tout ce que les options ne couvrent pas (en-têtes, compteurs, etc.). */
   customCss: string;
@@ -84,6 +95,16 @@ export const DEFAULT_CONFIG: TemplateConfig = {
   header: { photo: true, photoSize: "110px", photoShape: "circle" },
   bullets: { marker: "-" },
   contact: { showIcons: true },
+  display: {
+    sectionTitles: true,
+    contactLabels: true,
+    dates: true,
+    organizations: true,
+    descriptions: true,
+    skillCategories: true,
+    skillLevels: true,
+    publicationAbstracts: true,
+  },
   customCss: "",
 };
 
@@ -117,6 +138,15 @@ bullets:
   marker: "•"               # "" pour masquer les tirets
 contact:
   show_icons: true
+display:                    # afficher/masquer des éléments (true = affiché)
+  section_titles: true
+  contact_labels: true      # false = seulement l'icône + la valeur
+  dates: true
+  organizations: true       # organisation · lieu
+  descriptions: true
+  skill_categories: true
+  skill_levels: true
+  publication_abstracts: true
 # CSS libre pour tout le reste (scopé .theme-yaml) :
 # custom_css: |
 #   .theme-yaml .site-header { border-bottom: 2px solid var(--accent); }
@@ -152,6 +182,7 @@ export function parseTemplateConfig(yamlText: string | null | undefined): {
   const header = obj(raw.header);
   const bullets = obj(raw.bullets);
   const contact = obj(raw.contact);
+  const display = obj(raw.display);
 
   const config: TemplateConfig = {
     layout: {
@@ -204,6 +235,19 @@ export function parseTemplateConfig(yamlText: string | null | undefined): {
         typeof bullets.marker === "string" ? bullets.marker : d.bullets.marker,
     },
     contact: { showIcons: bool(contact.show_icons, d.contact.showIcons) },
+    display: {
+      sectionTitles: bool(display.section_titles, d.display.sectionTitles),
+      contactLabels: bool(display.contact_labels, d.display.contactLabels),
+      dates: bool(display.dates, d.display.dates),
+      organizations: bool(display.organizations, d.display.organizations),
+      descriptions: bool(display.descriptions, d.display.descriptions),
+      skillCategories: bool(display.skill_categories, d.display.skillCategories),
+      skillLevels: bool(display.skill_levels, d.display.skillLevels),
+      publicationAbstracts: bool(
+        display.publication_abstracts,
+        d.display.publicationAbstracts,
+      ),
+    },
     customCss: typeof raw.custom_css === "string" ? raw.custom_css : "",
   };
 
@@ -273,6 +317,19 @@ export function generateThemeCss(config: TemplateConfig): string {
 
   // Icônes de contact
   if (!c.contact.showIcons) rules.push(`.theme-yaml .contact-icon{display:none;}`);
+
+  // Afficher/masquer des éléments (display:) — un false = masqué.
+  const hide = (show: boolean, selector: string) => {
+    if (!show) rules.push(`.theme-yaml ${selector}{display:none;}`);
+  };
+  hide(c.display.sectionTitles, ".sec-title");
+  hide(c.display.contactLabels, ".contact-label");
+  hide(c.display.dates, ".ti-dates");
+  hide(c.display.organizations, ".ti-meta");
+  hide(c.display.descriptions, ".ti-desc");
+  hide(c.display.skillCategories, ".skill-cat");
+  hide(c.display.skillLevels, ".skill-level");
+  hide(c.display.publicationAbstracts, ".pub-abstract");
 
   // Mise en page deux colonnes (la sidebar est toujours en 1er dans le DOM)
   if (c.layout.type === "two-column") {
