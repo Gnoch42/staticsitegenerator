@@ -60,7 +60,7 @@ Caddy · single-password auth (signed session cookie).
 - **Template-stylable details** — contact entries show icons (envelope, phone…)
   and leading dashes in text are wrapped for styling; both can be restyled or hidden
   per template via CSS (`.contact-icon`, `.li-dash`).
-- **5 templates** — minimal, structured, academic, modern, slate.
+- **2 built-in templates** — structured, academic (both YAML; create your own).
 
 ## Run locally
 
@@ -153,14 +153,12 @@ Schema: [`generator/src/db/schema.ts`](generator/src/db/schema.ts) ·
 seed & migration: [`generator/src/db/init.ts`](generator/src/db/init.ts).
 
 ## Templates
-Five themes that consume the **same** data model, with no theme-specific business
-logic (all the difference is in rendering + CSS): **minimal**, **structured** (two
-columns, reference CV wireframe), **academic**, **modern**, **slate**. Each template
-renders both a web layout and a compact **print layout** for the PDF.
-Components: `generator/src/templates/*` · styles: `generator/public/themes/*.css`.
+Two built-in templates — **structured** (two columns, reference CV wireframe) and
+**academic** (serif) — plus any you create. All consume the **same** data model and
+render both a web layout and a compact **print layout** for the PDF.
 
 ### YAML templates
-**All templates — including the 5 built-ins — are YAML configs**, editable from the
+**All templates — including the built-ins — are YAML configs**, editable from the
 admin (Settings → *Custom templates*), no code needed. You can also create your own.
 A `custom_css` field (scoped to `.theme-yaml`) is the escape hatch for anything the
 options don't cover (gradient headers, numbered publications, etc.). The YAML controls colors, fonts,

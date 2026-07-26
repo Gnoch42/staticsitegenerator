@@ -1,5 +1,5 @@
 import type BetterSqlite3 from "better-sqlite3";
-import { BUILTIN_TEMPLATES } from "./builtinTemplates";
+import { BUILTIN_TEMPLATES, REMOVED_TEMPLATE_IDS } from "./builtinTemplates";
 
 // ─────────────────────────────────────────────────────────────
 //  Bootstrap idempotent : crée le schéma et sème les données de
@@ -171,6 +171,17 @@ function seed(conn: BetterSqlite3.Database): void {
        yaml = COALESCE(templates.yaml, excluded.yaml)`,
   );
   for (const t of BUILTIN_TEMPLATES) insertTemplate.run(t);
+
+  // Retrait des anciens templates de base (minimal/modern/slate).
+  const del = conn.prepare(`DELETE FROM templates WHERE id = ?`);
+  for (const id of REMOVED_TEMPLATE_IDS) del.run(id);
+  // Si le template actif n'existe plus, revenir à "structured".
+  conn
+    .prepare(
+      `UPDATE site SET template_id = 'structured'
+       WHERE id = 1 AND template_id NOT IN (SELECT id FROM templates)`,
+    )
+    .run();
 
   // Le reste du seed n'a lieu qu'au tout premier démarrage.
   const siteExists = conn.prepare(`SELECT 1 FROM site WHERE id = 1`).get();

@@ -60,7 +60,7 @@ Caddy · auth par mot de passe unique (cookie de session signé).
 - **Détails stylables par template** — les coordonnées affichent des icônes
   (enveloppe, téléphone…) et les tirets de début de ligne sont balisés ; les deux se
   restylent ou se masquent par template via CSS (`.contact-icon`, `.li-dash`).
-- **5 templates** — minimal, structured, academic, modern, slate.
+- **2 templates fournis** — structured, academic (en YAML ; crée les tiens).
 
 ## Lancer en local
 
@@ -154,14 +154,12 @@ Schéma : [`generator/src/db/schema.ts`](generator/src/db/schema.ts) ·
 seed & migration : [`generator/src/db/init.ts`](generator/src/db/init.ts).
 
 ## Templates
-Cinq thèmes qui consomment le **même** modèle de données, sans logique métier propre
-(toute la différence est dans le rendu + CSS) : **minimal**, **structured** (deux
-colonnes, wireframe de référence), **academic**, **modern**, **slate**. Chaque
-template rend un layout web ET un layout **imprimé** compact pour le PDF.
-Composants : `generator/src/templates/*` · styles : `generator/public/themes/*.css`.
+Deux templates fournis — **structured** (deux colonnes, wireframe de référence) et
+**academic** (sérif) — plus ceux que tu crées. Tous consomment le **même** modèle de
+données et rendent un layout web ET un layout **imprimé** compact pour le PDF.
 
 ### Templates YAML
-**Tous les templates — y compris les 5 intégrés — sont des configs YAML**, éditables
+**Tous les templates — y compris les intégrés — sont des configs YAML**, éditables
 depuis l'admin (Réglages → *Templates personnalisés*), sans code. Tu peux aussi créer
 les tiens. Un champ `custom_css` (scopé `.theme-yaml`) sert d'échappatoire pour tout
 ce que les options ne couvrent pas (en-têtes dégradés, publications numérotées, etc.). Le YAML contrôle
