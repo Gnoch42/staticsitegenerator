@@ -31,6 +31,10 @@ Next.js (App Router) · TypeScript · Drizzle ORM + better-sqlite3 · Playwright
 Caddy · auth par mot de passe unique (cookie de session signé).
 
 ## Fonctionnalités
+- **Page d'accueil personnalisable** — la page d'atterrissage (racine du site),
+  composée de blocs flexibles : texte, image, boutons/liens, vidéo, galerie et un
+  bloc HTML libre. Même modèle sections/items → éditable via l'interface **et** le
+  YAML de contenu, stylée par le template actif.
 - **Onglets activables** — chaque page s'active/désactive depuis Réglages ; les
   pages désactivées sont retirées du site publié.
 - **Nom et photo de profil** — affichés en haut du CV (tous templates + PDF), avec

@@ -22,6 +22,7 @@ export const ADMIN_STRINGS: Dict = {
 
   // Tabs
   tab_settings: { fr: "Réglages", en: "Settings" },
+  tab_home: { fr: "Accueil", en: "Home" },
   tab_cv: { fr: "CV", en: "CV" },
   tab_video: { fr: "Vidéo", en: "Video" },
   tab_research: { fr: "Publications", en: "Publications" },

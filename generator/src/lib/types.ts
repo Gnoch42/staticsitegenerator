@@ -7,7 +7,13 @@
 /** Champ multilingue : { "fr": "…", "en": "…" }. */
 export type Multilingual = Record<string, string>;
 
-export type PageType = "cv" | "video" | "research" | "portfolio" | "contact";
+export type PageType =
+  | "home"
+  | "cv"
+  | "video"
+  | "research"
+  | "portfolio"
+  | "contact";
 
 /** Visibilité d'une section/d'un item selon le support de rendu. */
 export type Visibility = "both" | "online" | "print";
@@ -55,10 +61,15 @@ export type SectionType =
   // page portfolio
   | "portfolio_gallery"
   // page contact
-  | "contact_links";
+  | "contact_links"
+  // page d'accueil (blocs flexibles)
+  | "image"
+  | "links"
+  | "html";
 
 /** Sections autorisées par type de page (validation applicative). */
 export const SECTIONS_BY_PAGE: Record<PageType, SectionType[]> = {
+  home: ["custom", "image", "links", "video_embed", "portfolio_gallery", "html"],
   cv: [
     "contact",
     "summary",
@@ -133,11 +144,14 @@ export const SECTION_LABELS: Record<SectionType, Multilingual> = {
   skills: { fr: "Compétences", en: "Skills" },
   distinctions: { fr: "Distinctions", en: "Distinctions" },
   hobbies: { fr: "Loisirs", en: "Hobbies" },
-  custom: { fr: "Section personnalisée", en: "Custom section" },
+  custom: { fr: "Bloc de texte", en: "Text block" },
   video_embed: { fr: "Vidéo", en: "Video" },
   publication_list: { fr: "Publications", en: "Publications" },
   portfolio_gallery: { fr: "Galerie", en: "Gallery" },
   contact_links: { fr: "Liens de contact", en: "Contact links" },
+  image: { fr: "Image", en: "Image" },
+  links: { fr: "Boutons / liens", en: "Buttons / links" },
+  html: { fr: "HTML libre", en: "Custom HTML" },
 };
 
 /** Sections où les items sont des "coordonnées" simples (sidebar courte). */

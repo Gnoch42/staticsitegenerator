@@ -16,7 +16,7 @@ import {
 //  sérialiser (pour l'éditeur) et parser/valider (pour l'import).
 // ─────────────────────────────────────────────────────────────
 
-const PAGE_TYPES: PageType[] = ["cv", "video", "research", "portfolio", "contact"];
+const PAGE_TYPES: PageType[] = ["home", "cv", "video", "research", "portfolio", "contact"];
 
 export interface ParsedItem {
   data: Record<string, unknown>;

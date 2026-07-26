@@ -10,7 +10,7 @@ import { PageEditor } from "@/components/admin/PageEditor";
 
 export const dynamic = "force-dynamic";
 
-const VALID: PageType[] = ["cv", "video", "research", "portfolio", "contact"];
+const VALID: PageType[] = ["home", "cv", "video", "research", "portfolio", "contact"];
 
 export default async function EditPage({
   params,

@@ -67,9 +67,92 @@ function renderBody(section: SectionWithItems, ctx: Ctx) {
       return <PublicationList section={section} ctx={ctx} />;
     case "portfolio_gallery":
       return <PortfolioGallery section={section} ctx={ctx} />;
+    case "image":
+      return <ImageBlock section={section} ctx={ctx} />;
+    case "links":
+      return <LinkButtons section={section} ctx={ctx} />;
+    case "html":
+      return <HtmlBlock section={section} ctx={ctx} />;
     default:
       return null;
   }
+}
+
+// ── Bloc image (une ou plusieurs images pleine largeur) ──
+function ImageBlock({ section, ctx }: { section: SectionWithItems; ctx: Ctx }) {
+  return (
+    <>
+      {section.items.map((item) => {
+        const d = item.data as { image?: string; link?: string; caption?: Multilingual };
+        if (!d.image) return null;
+        // eslint-disable-next-line @next/next/no-img-element
+        const img = <img className="block-img" src={d.image} alt="" loading="lazy" />;
+        return (
+          <figure key={item.id} className="image-block">
+            {d.link ? (
+              <a href={d.link} target="_blank" rel="noreferrer">
+                {img}
+              </a>
+            ) : (
+              img
+            )}
+            {d.caption && hasContent(d.caption) && (
+              <figcaption className="block-caption">
+                <I18n field={d.caption} langs={ctx.langs} />
+              </figcaption>
+            )}
+          </figure>
+        );
+      })}
+    </>
+  );
+}
+
+// ── Boutons / liens ──
+function LinkButtons({ section, ctx }: { section: SectionWithItems; ctx: Ctx }) {
+  return (
+    <div className="link-buttons">
+      {section.items.map((item) => {
+        const d = item.data as { label?: Multilingual; url?: string };
+        if (!d.url) return null;
+        const href = /^(https?:|mailto:|tel:|\/|#)/.test(d.url) ? d.url : `https://${d.url}`;
+        return (
+          <a key={item.id} className="link-btn" href={href}>
+            <I18n field={d.label} langs={ctx.langs} />
+          </a>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── HTML libre (multilingue, rendu tel quel) ──
+function HtmlBlock({ section, ctx }: { section: SectionWithItems; ctx: Ctx }) {
+  return (
+    <>
+      {section.items.map((item) => {
+        const d = item.data as Record<string, unknown>;
+        return (
+          <div key={item.id} className="html-block">
+            {ctx.langs.map((lang) => {
+              const perLang = d[lang];
+              const html =
+                perLang && typeof perLang === "object"
+                  ? String((perLang as Record<string, unknown>).html ?? "")
+                  : "";
+              return (
+                <div
+                  key={lang}
+                  data-lang={lang}
+                  dangerouslySetInnerHTML={{ __html: html }}
+                />
+              );
+            })}
+          </div>
+        );
+      })}
+    </>
+  );
 }
 
 // ── Portfolio : images commentées ──

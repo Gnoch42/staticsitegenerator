@@ -128,6 +128,34 @@ function migrate(conn: BetterSqlite3.Database): void {
       )
       .run(res.lastInsertRowid as number, JSON.stringify({ fr: "Portfolio", en: "Portfolio" }));
   }
+
+  // Ajoute la page d'accueil (en 1re position) si une base existante ne l'a pas.
+  const home = conn.prepare(`SELECT 1 FROM pages WHERE type = 'home'`).get();
+  if (site && !home) {
+    const minPos = conn
+      .prepare(`SELECT COALESCE(MIN(position), 0) AS m FROM pages`)
+      .get() as { m: number };
+    const res = conn
+      .prepare(
+        `INSERT INTO pages (type, slug, enabled, position) VALUES ('home', 'home', 1, ?)`,
+      )
+      .run(minPos.m - 1);
+    const secRes = conn
+      .prepare(
+        `INSERT INTO sections (page_id, type, enabled, position, title, visibility)
+         VALUES (?, 'custom', 1, 0, ?, 'both')`,
+      )
+      .run(res.lastInsertRowid as number, JSON.stringify({ fr: "Bienvenue", en: "Welcome" }));
+    conn
+      .prepare(`INSERT INTO items (section_id, position, data) VALUES (?, 0, ?)`)
+      .run(
+        secRes.lastInsertRowid as number,
+        JSON.stringify({
+          fr: { heading: "Bonjour 👋", body: "Page d'accueil à personnaliser." },
+          en: { heading: "Hello 👋", body: "Customize this home page." },
+        }),
+      );
+  }
 }
 
 // ── Seed : templates (toujours à jour) + contenu de départ (si vide) ──
@@ -193,9 +221,26 @@ function seed(conn: BetterSqlite3.Database): void {
 
 const DEFAULT_PAGES = [
   {
+    type: "home",
+    slug: "home",
+    position: 0,
+    sections: [
+      {
+        type: "custom",
+        title: { fr: "Bienvenue", en: "Welcome" },
+        items: [
+          {
+            fr: { heading: "Bonjour 👋", body: "Page d'accueil à personnaliser — ajoutez du texte, des images, des boutons, une vidéo…" },
+            en: { heading: "Hello 👋", body: "Customize this home page — add text, images, buttons, a video…" },
+          },
+        ],
+      },
+    ],
+  },
+  {
     type: "cv",
     slug: "cv",
-    position: 0,
+    position: 1,
     sections: [
       {
         type: "contact",
@@ -264,7 +309,7 @@ const DEFAULT_PAGES = [
   {
     type: "video",
     slug: "video",
-    position: 1,
+    position: 2,
     sections: [
       {
         type: "video_embed",
@@ -276,7 +321,7 @@ const DEFAULT_PAGES = [
   {
     type: "research",
     slug: "research",
-    position: 2,
+    position: 3,
     sections: [
       {
         type: "publication_list",
@@ -288,7 +333,7 @@ const DEFAULT_PAGES = [
   {
     type: "portfolio",
     slug: "portfolio",
-    position: 3,
+    position: 4,
     sections: [
       {
         type: "portfolio_gallery",
@@ -300,7 +345,7 @@ const DEFAULT_PAGES = [
   {
     type: "contact",
     slug: "contact",
-    position: 4,
+    position: 5,
     sections: [
       {
         type: "contact_links",

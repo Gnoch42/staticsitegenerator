@@ -31,6 +31,10 @@ Next.js (App Router) · TypeScript · Drizzle ORM + better-sqlite3 · Playwright
 Caddy · single-password auth (signed session cookie).
 
 ## Features
+- **Customizable home page** — the landing page (site root) built from flexible
+  blocks: text, image, buttons/links, video, gallery, and a free-HTML block. Same
+  sections/items model, so it's editable via the GUI **and** the content YAML, and
+  styled by the active template.
 - **Toggleable tabs** — each page can be enabled/disabled from Settings; disabled
   pages are removed from the published site.
 - **Name & profile photo** — shown at the top of the CV (all templates + PDF), with

@@ -146,7 +146,9 @@ export function ItemEditor({
   const flatFields = FLAT_FIELDS[sectionType] ?? [];
   const isContact = sectionType === "contact" || sectionType === "contact_links";
   const isVideo = sectionType === "video_embed";
-  const isPortfolio = sectionType === "portfolio_gallery";
+  const isPortfolio = sectionType === "portfolio_gallery" || sectionType === "image";
+  const isLinks = sectionType === "links";
+  const isHtml = sectionType === "html";
 
   return (
     <div className="item-block">
@@ -206,6 +208,45 @@ export function ItemEditor({
             ))}
           </div>
         </>
+      )}
+
+      {/* Boutons / liens (accueil) */}
+      {isLinks && (
+        <>
+          <div className="row">
+            <div style={{ flex: "2 1 300px" }}>
+              <label>{t("f_url")}</label>
+              <input value={flat("url")} onChange={(e) => setFlat("url", e.target.value)} onBlur={() => persist(data)} placeholder="https://… · mailto:… · /cv/" />
+            </div>
+          </div>
+          <div className="lang-cols">
+            {langs.map((lang) => (
+              <div key={lang} className="lang-col">
+                <span className="lang-tag">{t("f_label")} — {LANG_NAMES[lang] ?? lang}</span>
+                <input value={multi("label", lang)} onChange={(e) => setMulti("label", lang, e.target.value)} onBlur={() => persist(data)} />
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* HTML libre (accueil) */}
+      {isHtml && (
+        <div className="lang-cols">
+          {langs.map((lang) => (
+            <div key={lang} className="lang-col">
+              <span className="lang-tag">HTML — {LANG_NAMES[lang] ?? lang}</span>
+              <textarea
+                className="yaml-editor"
+                style={{ minHeight: "10rem" }}
+                value={nested(lang, "html")}
+                onChange={(e) => setNested(lang, "html", e.target.value)}
+                onBlur={() => persist(data)}
+                spellCheck={false}
+              />
+            </div>
+          ))}
+        </div>
       )}
 
       {/* Contact / liens de contact */}

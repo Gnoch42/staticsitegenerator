@@ -6,6 +6,7 @@ import { PublishButton } from "./PublishButton";
 
 const TABS = [
   { href: "/admin", key: "settings", label: "tab_settings" },
+  { href: "/admin/home", key: "home", label: "tab_home" },
   { href: "/admin/cv", key: "cv", label: "tab_cv" },
   { href: "/admin/video", key: "video", label: "tab_video" },
   { href: "/admin/research", key: "research", label: "tab_research" },

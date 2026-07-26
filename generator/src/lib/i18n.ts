@@ -1,6 +1,7 @@
 import type { Multilingual } from "./types";
 
 export const PAGE_LABELS: Record<string, Multilingual> = {
+  home: { fr: "Accueil", en: "Home" },
   cv: { fr: "CV", en: "CV" },
   video: { fr: "Vidéo", en: "Video" },
   research: { fr: "Publications", en: "Publications" },
