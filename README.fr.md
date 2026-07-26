@@ -157,9 +157,9 @@ seed & migration : [`generator/src/db/init.ts`](generator/src/db/init.ts).
 Deux templates fournis — **structured** (deux colonnes, wireframe de référence) et
 **academic** (sérif) — plus ceux que tu crées. Tous consomment le **même** modèle de
 données et rendent un layout web ET un layout **imprimé** compact pour le PDF. À
-l'impression, un template à colonnes garde sa colonne latérale, et le contenu
-principal occupe toute la largeur une fois la sidebar terminée (pas de colonne vide
-réservée sur les pages suivantes).
+l'impression, un template à colonnes garde une **colonne latérale pleine hauteur sur
+la première page**, puis le contenu principal occupe toute la largeur sur les pages
+suivantes (pas de colonne qui s'arrête au milieu, pas de demi-colonne vide réservée).
 
 ### Templates YAML
 **Tous les templates — y compris les intégrés — sont des configs YAML**, éditables

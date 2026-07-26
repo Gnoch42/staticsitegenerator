@@ -369,15 +369,19 @@ export function generateThemeCss(config: TemplateConfig): string {
         );
       }
     }
-    // IMPRESSION : sidebar flottante (colonne à gauche) ; le contenu principal
-    // remplit toute la largeur une fois la sidebar terminée (pas de colonne
-    // blanche réservée sur les pages suivantes).
+    // IMPRESSION : sidebar flottante (colonne à gauche) qui occupe TOUTE la
+    // hauteur de la (première) page — pas de colonne qui s'arrête au milieu.
+    // Le contenu principal se place à droite sur cette page, puis reprend
+    // pleine largeur ensuite (donc pas de demi-colonne vide sur la page suivante).
     const floatDir = right ? "right" : "left";
     const marginSide = right ? "margin-left" : "margin-right";
+    const pageH = c.page.size === "us-letter" ? 279.4 : 297;
+    const m = parseMarginMm(c.page.margin);
+    const sidebarMinH = Math.max(80, Math.round(pageH - 2 * m - 4));
     rules.push(
       `@media print{` +
         `.theme-yaml .two-col{display:block;}` +
-        `.theme-yaml .col-sidebar{float:${floatDir};width:${c.layout.sidebarWidth};${marginSide}:${c.layout.columnGap};grid-column:auto;}` +
+        `.theme-yaml .col-sidebar{float:${floatDir};width:${c.layout.sidebarWidth};${marginSide}:${c.layout.columnGap};grid-column:auto;min-height:${sidebarMinH}mm;box-sizing:border-box;}` +
         `.theme-yaml .col-main{grid-column:auto;padding:0;}` +
         `}`,
     );
@@ -404,6 +408,17 @@ export function pdfPageOptions(config: TemplateConfig): {
 }
 
 // ── helpers ──
+/** Convertit une marge CSS ("16mm", "1.4cm", "0.7in") en millimètres. */
+function parseMarginMm(s: string): number {
+  const m = String(s).trim().match(/^([\d.]+)\s*(mm|cm|in)?$/);
+  if (!m) return 16;
+  let v = parseFloat(m[1]);
+  const unit = m[2] ?? "mm";
+  if (unit === "cm") v *= 10;
+  else if (unit === "in") v *= 25.4;
+  return v;
+}
+
 function obj(v: unknown): Record<string, unknown> {
   return v && typeof v === "object" ? (v as Record<string, unknown>) : {};
 }

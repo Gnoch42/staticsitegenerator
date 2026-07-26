@@ -2,8 +2,10 @@
    La taille/marge de page est pilotée par Playwright (config du template) ;
    le layout deux-colonnes en impression est généré par template (flottant).
    Ici : règles communes de coupure de page et anti-débordement. */
+/* Les marges du PDF sont pilotées par Playwright (config du template) ;
+   on n'ajoute pas de marge @page pour ne pas les cumuler. */
 @page {
-  margin: 14mm;
+  margin: 0;
 }
 
 @media print {
