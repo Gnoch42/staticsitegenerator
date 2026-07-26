@@ -201,16 +201,33 @@ pour ne garder que l'icône + la valeur, ou masquer `dates`, `section_titles`,
 (scopées `.theme-yaml`) + une mise en page, appliquées au rendu web ET au PDF. Config/générateur :
 [`generator/src/lib/templateConfig.ts`](generator/src/lib/templateConfig.ts).
 
-## Contenu en YAML
-En plus de l'éditeur graphique, tout le **contenu** du site (sections → items →
-textes, toutes les pages) peut être édité en YAML depuis l'admin (onglet Contenu).
-La base reste la source de vérité : l'éditeur YAML charge le contenu actuel, et
-l'enregistrement le réécrit de façon transactionnelle — l'éditeur graphique reste
-synchronisé. Les items référencent les profils par nom (créés au besoin). Seules les
-pages présentes dans le YAML sont remplacées.
-Tu peux **télécharger** le contenu en `.yaml`, en **réimporter** un, ou **exporter le
-YAML filtré par profil** (seulement les items de ce profil).
-Sérialiseur/parseur : [`generator/src/lib/contentYaml.ts`](generator/src/lib/contentYaml.ts).
+## Tout en YAML
+En plus de l'éditeur graphique, l'instance s'édite en YAML selon **quatre catégories**
+(inspirées de RenderCV). Chacune est une surface aller-retour où la base SQLite reste
+la source de vérité : l'éditeur charge l'état courant et l'enregistrement le réécrit de
+façon transactionnelle — l'éditeur graphique reste synchronisé :
+
+- **CV** (contenu) — sections → items → textes, toutes les pages (onglet Contenu). Les
+  items référencent les profils par nom (créés au besoin) ; seules les pages présentes
+  dans le YAML sont remplacées. Tu peux **télécharger**, **réimporter**, ou **exporter
+  le YAML filtré par profil** (seulement les items de ce profil).
+  [`contentYaml.ts`](generator/src/lib/contentYaml.ts)
+- **Design** (templates) — couleurs, polices, mise en page, colonnes, afficher/masquer,
+  `custom_css`, et les `labels` par template (ex. le mot `ongoing` pour une date de fin
+  ouverte). Édité dans Réglages → *Templates personnalisés*.
+  [`templateConfig.ts`](generator/src/lib/templateConfig.ts)
+- **Locale** (onglet Locale) — noms de mois et patron de date par langue (jetons
+  `YYYY`, `MM`, `MMM`, `MMMM`) plus le séparateur de plage.
+  [`locale.ts`](generator/src/lib/locale.ts)
+- **Réglages** (page Réglages) — template actif, langues, langue admin, nom, photo
+  (+ ses profils), profil actif, visibilité des onglets, et la liste des profils
+  (créés/réordonnés par nom ; jamais supprimés automatiquement). Les champs absents ne
+  sont pas modifiés. [`settingsYaml.ts`](generator/src/lib/settingsYaml.ts)
+
+Un export/import **« site complet »** (page Réglages) regroupe les quatre sous les
+clés de premier niveau `cv:` / `design:` / `locale:` / `settings:` — un seul `.yaml`
+pour sauvegarder ou transférer toute l'instance.
+[`siteYaml.ts`](generator/src/lib/siteYaml.ts)
 
 ## Portfolio & images téléversées
 Les images téléversées sont stockées dans le volume (`<DATA_DIR>/uploads`,

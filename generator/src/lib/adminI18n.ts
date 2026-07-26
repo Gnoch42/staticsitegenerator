@@ -29,6 +29,41 @@ export const ADMIN_STRINGS: Dict = {
   tab_portfolio: { fr: "Portfolio", en: "Portfolio" },
   tab_contact: { fr: "Contact", en: "Contact" },
   tab_content: { fr: "Contenu (YAML)", en: "Content (YAML)" },
+  tab_locale: { fr: "Locale (YAML)", en: "Locale (YAML)" },
+
+  // Generic YAML surface buttons (locale / settings / full site)
+  yaml_save: { fr: "Enregistrer le YAML", en: "Save YAML" },
+  yaml_reload: { fr: "Recharger depuis la base", en: "Reload from database" },
+  yaml_download: { fr: "Télécharger .yaml", en: "Download .yaml" },
+  yaml_upload: { fr: "Importer un fichier…", en: "Import a file…" },
+  yaml_saved: { fr: "Enregistré ✓", en: "Saved ✓" },
+
+  // Locale YAML
+  locale_title: { fr: "Locale : mois et format de date", en: "Locale: months and date format" },
+  locale_hint: {
+    fr: "Noms de mois et patron de date par langue. Jetons : YYYY, MM, MMM (mois court), MMMM (mois long).",
+    en: "Month names and date pattern per language. Tokens: YYYY, MM, MMM (short month), MMMM (long month).",
+  },
+  locale_confirm: { fr: "Remplacer la locale du site par ce YAML ?", en: "Replace the site locale with this YAML?" },
+
+  // Settings YAML (in Réglages page)
+  settings_yaml_title: { fr: "Réglages en YAML", en: "Settings as YAML" },
+  settings_yaml_hint: {
+    fr: "Édition alternative des réglages (template, langues, photo, profils, onglets). Les champs absents ne sont pas modifiés ; les profils ne sont jamais supprimés automatiquement.",
+    en: "Alternative editing of the settings (template, languages, photo, profiles, tabs). Missing fields are left unchanged; profiles are never auto-deleted.",
+  },
+  settings_yaml_confirm: { fr: "Appliquer ces réglages ?", en: "Apply these settings?" },
+
+  // Full-site YAML export/import
+  site_yaml_title: { fr: "Site complet (YAML)", en: "Full site (YAML)" },
+  site_yaml_hint: {
+    fr: "Un seul fichier regroupant cv / design / locale / settings — pour sauvegarder ou transférer toute l'instance.",
+    en: "A single file bundling cv / design / locale / settings — to back up or transfer the whole instance.",
+  },
+  site_yaml_confirm: {
+    fr: "Remplacer le site (contenu, design du template actif, locale, réglages) par ce YAML ?",
+    en: "Replace the site (content, active template design, locale, settings) with this YAML?",
+  },
 
   // Content YAML editor
   content_title: { fr: "Contenu du site en YAML", en: "Site content as YAML" },

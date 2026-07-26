@@ -11,6 +11,10 @@ import { AdminLanguageSelect } from "@/components/admin/AdminLanguageSelect";
 import { PageToggles } from "@/components/admin/PageToggles";
 import { ProfilesManager } from "@/components/admin/ProfilesManager";
 import { TemplateEditor } from "@/components/admin/TemplateEditor";
+import { YamlSurface } from "@/components/admin/YamlSurface";
+import { buildSettingsYaml } from "@/lib/settingsYaml";
+import { buildSiteYaml } from "@/lib/siteYaml";
+import { importSettingsYaml, importSiteYaml } from "@/app/admin/actions";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +23,8 @@ export default async function AdminHome() {
   const full = await getFullSite();
   const lang = full.site.adminLanguage as AdminLang;
   const at = (k: string) => tAdmin(k, lang);
+  const settingsYaml = buildSettingsYaml(full);
+  const siteYaml = buildSiteYaml(full);
 
   return (
     <AdminShell active="settings" lang={lang}>
@@ -95,6 +101,28 @@ export default async function AdminHome() {
           }))}
         />
       </div>
+
+      <YamlSurface
+        kind="settings"
+        initial={settingsYaml}
+        title={at("settings_yaml_title")}
+        hint={at("settings_yaml_hint")}
+        confirmMsg={at("settings_yaml_confirm")}
+        filename="reglages.yaml"
+        reloadHref="/admin"
+        save={importSettingsYaml}
+      />
+
+      <YamlSurface
+        kind="site"
+        initial={siteYaml}
+        title={at("site_yaml_title")}
+        hint={at("site_yaml_hint")}
+        confirmMsg={at("site_yaml_confirm")}
+        filename="site-complet.yaml"
+        reloadHref="/admin"
+        save={importSiteYaml}
+      />
     </AdminShell>
   );
 }

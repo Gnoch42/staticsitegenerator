@@ -19,11 +19,18 @@ export default function YamlTemplate({
   photoUrl,
   profileId,
   config,
+  locale,
   showPdf,
   pdfHref,
 }: TemplateProps) {
   const cfg = config ?? DEFAULT_CONFIG;
-  const ctx = { langs, mode, profileId };
+  const ctx = {
+    langs,
+    mode,
+    profileId,
+    locale: locale ?? null,
+    ongoing: cfg.labels.ongoing,
+  };
   const isCv = page.type === "cv";
   const twoCol = cfg.layout.type === "two-column" && isCv;
 

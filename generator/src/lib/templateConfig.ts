@@ -1,4 +1,5 @@
 import { parse } from "yaml";
+import type { Multilingual } from "./types";
 
 // ─────────────────────────────────────────────────────────────
 //  Templates configurables en YAML : style + mise en page (dont
@@ -58,6 +59,11 @@ export interface TemplateConfig {
     /** true = niveau de compétence sur sa propre ligne (sous la compétence). */
     skillLevelOwnLine: boolean;
   };
+  /** Libellés du rendu propres au template (pas de style / CSS). */
+  labels: {
+    /** Mot pour une date de fin ouverte (par langue). Vide = comportement défaut. */
+    ongoing: Multilingual;
+  };
   /** CSS libre ajouté à la fin (scopé `.theme-yaml`) — échappatoire pour
    *  tout ce que les options ne couvrent pas (en-têtes, compteurs, etc.). */
   customCss: string;
@@ -108,6 +114,7 @@ export const DEFAULT_CONFIG: TemplateConfig = {
     publicationAbstracts: true,
     skillLevelOwnLine: false,
   },
+  labels: { ongoing: {} },
   customCss: "",
 };
 
@@ -151,6 +158,10 @@ display:                    # afficher/masquer des éléments (true = affiché)
   skill_levels: true
   skill_level_own_line: false   # true = niveau sous la compétence
   publication_abstracts: true
+labels:                     # libellés du rendu (par langue)
+  ongoing:                  # mot pour une date de fin ouverte
+    fr: présent
+    en: present
 # CSS libre pour tout le reste (scopé .theme-yaml) :
 # custom_css: |
 #   .theme-yaml .site-header { border-bottom: 2px solid var(--accent); }
@@ -256,6 +267,7 @@ export function parseTemplateConfig(yamlText: string | null | undefined): {
         d.display.skillLevelOwnLine,
       ),
     },
+    labels: { ongoing: multilingual(obj(raw.labels).ongoing) },
     customCss: typeof raw.custom_css === "string" ? raw.custom_css : "",
   };
 
@@ -429,4 +441,14 @@ function enumVal<T extends string>(v: unknown, allowed: T[], def: T): T {
 }
 function clone<T>(v: T): T {
   return JSON.parse(JSON.stringify(v));
+}
+/** { fr: "…", en: "…" } → Multilingual (chaînes seulement, non vides). */
+function multilingual(v: unknown): Multilingual {
+  const out: Multilingual = {};
+  if (v && typeof v === "object") {
+    for (const [k, val] of Object.entries(v as Record<string, unknown>)) {
+      if (typeof val === "string" && val.trim()) out[k] = val;
+    }
+  }
+  return out;
 }

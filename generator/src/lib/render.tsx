@@ -48,6 +48,7 @@ export function renderPageElement(
       photoUrl={photoVisible ? full.site.photoUrl : null}
       profileId={profileId}
       config={config}
+      locale={full.site.locale}
       showPdf={opts.showPdf}
       pdfHref={opts.pdfHref}
     />

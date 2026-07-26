@@ -18,10 +18,18 @@ export default function StructuredTemplate({
   ownerName,
   photoUrl,
   profileId,
+  locale,
+  config,
   showPdf,
   pdfHref,
 }: TemplateProps) {
-  const ctx = { langs, mode, profileId };
+  const ctx = {
+    langs,
+    mode,
+    profileId,
+    locale: locale ?? null,
+    ongoing: config?.labels.ongoing ?? {},
+  };
   const isCv = page.type === "cv";
 
   const sidebar = page.sections.filter((s) =>

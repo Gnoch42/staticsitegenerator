@@ -17,6 +17,10 @@ import {
 import { STARTER_YAML, parseTemplateConfig } from "@/lib/templateConfig";
 import { parseContentYaml, buildContentYaml } from "@/lib/contentYaml";
 import { applyContent } from "@/lib/contentImport";
+import { parseLocaleYaml } from "@/lib/locale";
+import { parseSettingsYaml } from "@/lib/settingsYaml";
+import { applySettings } from "@/lib/settingsImport";
+import { applySiteYaml } from "@/lib/siteImport";
 import { getFullSite } from "@/lib/queries";
 import { slugify } from "@/lib/slug";
 import {
@@ -225,6 +229,44 @@ export async function exportContentYaml(
   await guard();
   const full = await getFullSite();
   return buildContentYaml(full, profileId);
+}
+
+// ── Locale en YAML (mois + format de date) ──
+export async function importLocaleYaml(
+  yaml: string,
+): Promise<{ ok: boolean; error?: string }> {
+  await guard();
+  const { locale, error } = parseLocaleYaml(yaml);
+  if (error || !locale) return { ok: false, error: error ?? "YAML invalide" };
+  db.update(site).set({ locale }).where(eq(site.id, 1)).run();
+  revalidatePath("/admin", "layout");
+  return { ok: true };
+}
+
+// ── Réglages en YAML (aller-retour avec la base) ──
+export async function importSettingsYaml(
+  yaml: string,
+): Promise<{ ok: boolean; error?: string }> {
+  await guard();
+  const { settings, error } = parseSettingsYaml(yaml);
+  if (error || !settings) return { ok: false, error: error ?? "YAML invalide" };
+  try {
+    applySettings(settings);
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Échec de l'import" };
+  }
+  revalidatePath("/admin", "layout");
+  return { ok: true };
+}
+
+// ── Site complet en YAML (cv + design + locale + settings) ──
+export async function importSiteYaml(
+  yaml: string,
+): Promise<{ ok: boolean; error?: string }> {
+  await guard();
+  const res = applySiteYaml(yaml);
+  if (res.ok) revalidatePath("/admin", "layout");
+  return res;
 }
 
 // ── Sections ──

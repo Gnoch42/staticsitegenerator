@@ -16,10 +16,18 @@ export default function AcademicTemplate({
   ownerName,
   photoUrl,
   profileId,
+  locale,
+  config,
   showPdf,
   pdfHref,
 }: TemplateProps) {
-  const ctx = { langs, mode, profileId };
+  const ctx = {
+    langs,
+    mode,
+    profileId,
+    locale: locale ?? null,
+    ongoing: config?.labels.ongoing ?? {},
+  };
   return (
     <div className="site-root theme-academic" data-active-lang={activeLang}>
       <SiteHeader nav={nav} langs={langs} ownerName={ownerName} showPdf={showPdf} pdfHref={pdfHref} />

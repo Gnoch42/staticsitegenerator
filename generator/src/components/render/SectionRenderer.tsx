@@ -1,6 +1,12 @@
 import type { SectionWithItems, ItemWithProfiles } from "@/lib/queries";
 import type { Multilingual, SectionType } from "@/lib/types";
 import { isInProfile } from "@/lib/types";
+import {
+  type LocaleConfig,
+  localeFor,
+  formatDateRange,
+  DEFAULT_ONGOING,
+} from "@/lib/locale";
 import { I18n, pickField, hasContent } from "./I18n";
 import { FormattedText } from "./FormattedText";
 import { ContactIcon } from "./ContactIcon";
@@ -10,6 +16,10 @@ interface Ctx {
   mode: "online" | "print";
   /** Profil actif ; null = CV complet. */
   profileId: number | null;
+  /** Locale (noms de mois + format de date) ; null = valeurs par défaut. */
+  locale: LocaleConfig | null;
+  /** Mot « en cours » par langue (du template) ; vide = défaut. */
+  ongoing: Multilingual;
 }
 
 export function SectionRenderer({
@@ -314,7 +324,7 @@ function TimelineList({ section, ctx }: { section: SectionWithItems; ctx: Ctx })
         // Si pas de plage de dates mais une année (distinctions) : afficher l'année.
         const dates =
           start || end
-            ? dateRangeMultilingual(start, end, ctx.langs)
+            ? dateRangeMultilingual(start, end, ctx)
             : yearOnly
               ? Object.fromEntries(ctx.langs.map((l) => [l, yearOnly]))
               : {};
@@ -548,24 +558,16 @@ function dateKey(s: string): number {
   return parseInt(m[1], 10) * 12 + (m[2] ? parseInt(m[2], 10) : 0);
 }
 
-// ── Format des dates par langue (FR: mois-année · EN: année-mois) ──
-function formatDateForLang(s: string, lang: string): string {
-  const m = s.match(/^(\d{4})-(\d{2})$/);
-  if (!m) return s; // année seule ou texte libre : inchangé
-  const [, y, mo] = m;
-  return lang === "en" ? `${y}-${mo}` : `${mo}-${y}`;
-}
+// ── Plage de dates par langue, selon la locale + le mot « en cours » ──
 function dateRangeMultilingual(
   start: string,
   end: string,
-  langs: string[],
+  ctx: Ctx,
 ): Multilingual {
   const out: Multilingual = {};
-  for (const lang of langs) {
-    out[lang] = [start, end]
-      .filter(Boolean)
-      .map((d) => formatDateForLang(d, lang))
-      .join(" – ");
+  for (const lang of ctx.langs) {
+    const ongoing = ctx.ongoing[lang] ?? DEFAULT_ONGOING[lang] ?? "";
+    out[lang] = formatDateRange(start, end, localeFor(ctx.locale, lang), ongoing);
   }
   return out;
 }

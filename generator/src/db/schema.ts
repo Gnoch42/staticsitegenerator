@@ -6,6 +6,7 @@ import type {
   PageType,
   Visibility,
 } from "@/lib/types";
+import type { LocaleConfig } from "@/lib/locale";
 
 // ── templates : données de seed, non éditables par l'utilisateur ──
 export const templates = sqliteTable("templates", {
@@ -29,6 +30,7 @@ export const site = sqliteTable("site", {
   photoProfileIds: text("photo_profile_ids", { mode: "json" }).$type<number[]>(),
   adminLanguage: text("admin_language").notNull().default("fr"),
   activeProfileId: integer("active_profile_id"),
+  locale: text("locale", { mode: "json" }).$type<LocaleConfig>(),
   publishedAt: integer("published_at", { mode: "timestamp" }),
 });
 

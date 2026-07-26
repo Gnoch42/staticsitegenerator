@@ -13,6 +13,7 @@ const TABS = [
   { href: "/admin/portfolio", key: "portfolio", label: "tab_portfolio" },
   { href: "/admin/contact", key: "contact", label: "tab_contact" },
   { href: "/admin/content", key: "content", label: "tab_content" },
+  { href: "/admin/locale", key: "locale", label: "tab_locale" },
 ];
 
 export function AdminShell({

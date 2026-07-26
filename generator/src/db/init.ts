@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS site (
   photo_profile_ids  TEXT,
   admin_language     TEXT NOT NULL DEFAULT 'fr',
   active_profile_id  INTEGER,
+  locale             TEXT,
   published_at       INTEGER
 );
 
@@ -104,6 +105,7 @@ function migrate(conn: BetterSqlite3.Database): void {
   addColumn("site", "photo_profile_ids", "TEXT");
   addColumn("site", "admin_language", "TEXT NOT NULL DEFAULT 'fr'");
   addColumn("site", "active_profile_id", "INTEGER");
+  addColumn("site", "locale", "TEXT");
   addColumn("sections", "visibility", "TEXT NOT NULL DEFAULT 'both'");
   addColumn("items", "visibility", "TEXT NOT NULL DEFAULT 'both'");
 

@@ -1,6 +1,7 @@
 import type { PageWithSections } from "@/lib/queries";
 import type { NavLink } from "@/components/render/SiteHeader";
 import type { TemplateConfig } from "@/lib/templateConfig";
+import type { LocaleConfig } from "@/lib/locale";
 
 /** Props communes reçues par les 3 templates. Aucun template n'a de
  *  logique métier : ils ne font qu'arranger visuellement ces données. */
@@ -19,6 +20,8 @@ export interface TemplateProps {
   profileId: number | null;
   /** Config d'un template YAML (uniquement pour YamlTemplate). */
   config?: TemplateConfig;
+  /** Locale (noms de mois + format de date) ; null = valeurs par défaut. */
+  locale?: LocaleConfig | null;
   showPdf?: boolean;
   pdfHref?: string;
 }

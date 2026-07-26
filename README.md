@@ -199,15 +199,31 @@ show only the icon + value, or hide `dates`, `section_titles`, `descriptions`,
 `.theme-yaml`) and a layout, applied to both the web render and the PDF. Config/generator:
 [`generator/src/lib/templateConfig.ts`](generator/src/lib/templateConfig.ts).
 
-## Content as YAML
-Besides the graphical editor, the whole site **content** (sections → items → texts,
-all pages) can be edited as YAML from the admin (Content tab). The database stays the
-single source of truth: the YAML editor loads the current content, and saving rewrites
-it transactionally — the graphical editor stays in sync. Items reference profiles by
-name (auto-created if new). Only the pages present in the YAML are replaced.
-You can **download** the content as a `.yaml` file, **import** one back, or **export a
-profile-filtered** YAML (only that profile's items).
-Serializer/parser: [`generator/src/lib/contentYaml.ts`](generator/src/lib/contentYaml.ts).
+## Everything as YAML
+Besides the graphical editor, the instance is editable as YAML across **four
+categories** (inspired by RenderCV), each a round-trip surface where the SQLite
+database stays the single source of truth — the editor loads the current state and
+saving rewrites it transactionally, so the graphical editor stays in sync:
+
+- **CV** (content) — sections → items → texts, all pages (Content tab). Items
+  reference profiles by name (auto-created if new); only the pages present in the YAML
+  are replaced. You can **download**, **import**, or **export a profile-filtered**
+  YAML (only that profile's items).
+  [`contentYaml.ts`](generator/src/lib/contentYaml.ts)
+- **Design** (templates) — colors, fonts, layout, columns, show/hide, `custom_css`,
+  and per-template `labels` (e.g. the `ongoing` word for open-ended dates). Edited in
+  Settings → *Custom templates*. [`templateConfig.ts`](generator/src/lib/templateConfig.ts)
+- **Locale** (Locale tab) — month names and the date pattern per language (tokens
+  `YYYY`, `MM`, `MMM`, `MMMM`) plus the range separator.
+  [`locale.ts`](generator/src/lib/locale.ts)
+- **Settings** (Settings page) — active template, languages, admin language, owner
+  name, photo (+ its profiles), active profile, tab visibility, and the profile list
+  (created/reordered by name; never auto-deleted). Missing fields are left unchanged.
+  [`settingsYaml.ts`](generator/src/lib/settingsYaml.ts)
+
+A **full-site** export/import (Settings page) bundles all four under top-level
+`cv:` / `design:` / `locale:` / `settings:` keys — one `.yaml` to back up or transfer
+the whole instance. [`siteYaml.ts`](generator/src/lib/siteYaml.ts)
 
 ## Portfolio & uploaded images
 Uploaded images are stored in the volume (`<DATA_DIR>/uploads`, overridable via
