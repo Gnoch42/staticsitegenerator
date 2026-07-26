@@ -381,26 +381,24 @@ export function generateThemeCss(config: TemplateConfig): string {
         );
       }
     }
-    // IMPRESSION : la grille ne s'étire pas en panneau pleine hauteur à travers
-    // les sauts de page (limite de Chromium). On peint donc le fond de la sidebar
-    // via un DÉGRADÉ sur le conteneur (les fonds, eux, se répètent bien sur chaque
-    // page) et on bloque le contenu principal dans sa colonne de droite avec une
-    // marge (il ne récupère jamais la largeur de la sidebar). Résultat : un
-    // panneau latéral coloré qui descend jusqu'en bas de CHAQUE page, deux colonnes
-    // sur toute la hauteur du document.
+    // IMPRESSION : ni la grille ni un fond de conteneur ne s'étirent en panneau
+    // pleine hauteur à travers les sauts de page (le fond s'arrête là où le
+    // contenu de la colonne s'arrête → blanc en bas quand un item insécable
+    // passe à la page suivante). Solution robuste : peindre le panneau via un
+    // pseudo-élément `position:fixed`, que Chromium répète sur CHAQUE page à
+    // pleine hauteur, indépendamment du flux. Le contenu principal reste bloqué
+    // dans sa colonne de droite via une marge ; la sidebar (flottante) pose son
+    // texte par-dessus la bande.
     const floatDir = right ? "right" : "left";
     const mainMargin = right ? "margin-right" : "margin-left";
-    const gradDir = right ? "to left" : "to right";
+    const bandSide = right ? "right" : "left";
     rules.push(
       `@media print{` +
-        `.theme-yaml .two-col{display:block;` +
         (c.colors.sidebarBg
-          ? `background:linear-gradient(${gradDir},${c.colors.sidebarBg} 0 ${c.layout.sidebarWidth},transparent ${c.layout.sidebarWidth});`
+          ? `.theme-yaml .col-sidebar::before{content:"";position:fixed;top:0;bottom:0;${bandSide}:0;width:${c.layout.sidebarWidth};background:${c.colors.sidebarBg};z-index:-1;}`
           : "") +
-        `}` +
-        `.theme-yaml .col-sidebar{float:${floatDir};width:${c.layout.sidebarWidth};grid-column:auto;border-radius:0;` +
-        (c.colors.sidebarBg ? `background:transparent;` : "") +
-        `}` +
+        `.theme-yaml .two-col{display:block;}` +
+        `.theme-yaml .col-sidebar{float:${floatDir};width:${c.layout.sidebarWidth};grid-column:auto;border-radius:0;background:transparent;position:relative;}` +
         `.theme-yaml .col-main{grid-column:auto;${mainMargin}:calc(${c.layout.sidebarWidth} + ${c.layout.columnGap});}` +
         `}`,
     );
