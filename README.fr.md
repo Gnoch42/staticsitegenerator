@@ -156,9 +156,11 @@ colonnes, wireframe de référence), **academic**, **modern**, **slate**. Chaque
 template rend un layout web ET un layout **imprimé** compact pour le PDF.
 Composants : `generator/src/templates/*` · styles : `generator/public/themes/*.css`.
 
-### Templates personnalisés (YAML)
-En plus des 5 templates intégrés, tu peux créer des **templates configurés en YAML**
-depuis l'admin (Réglages → *Templates personnalisés*), sans code. Le YAML contrôle
+### Templates YAML
+**Tous les templates — y compris les 5 intégrés — sont des configs YAML**, éditables
+depuis l'admin (Réglages → *Templates personnalisés*), sans code. Tu peux aussi créer
+les tiens. Un champ `custom_css` (scopé `.theme-yaml`) sert d'échappatoire pour tout
+ce que les options ne couvrent pas (en-têtes dégradés, publications numérotées, etc.). Le YAML contrôle
 couleurs, polices, tailles, espacements, style des titres de section, puces, icônes
 de contact, photo, taille de page PDF — et la **mise en page multi-colonnes** (quelles
 sections vont en sidebar, son côté et sa largeur). Exemple :

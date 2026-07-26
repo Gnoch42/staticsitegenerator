@@ -45,6 +45,9 @@ export interface TemplateConfig {
   };
   bullets: { marker: string };
   contact: { showIcons: boolean };
+  /** CSS libre ajouté à la fin (scopé `.theme-yaml`) — échappatoire pour
+   *  tout ce que les options ne couvrent pas (en-têtes, compteurs, etc.). */
+  customCss: string;
 }
 
 export const DEFAULT_CONFIG: TemplateConfig = {
@@ -81,6 +84,7 @@ export const DEFAULT_CONFIG: TemplateConfig = {
   header: { photo: true, photoSize: "110px", photoShape: "circle" },
   bullets: { marker: "-" },
   contact: { showIcons: true },
+  customCss: "",
 };
 
 /** YAML de départ proposé à la création d'un template. */
@@ -113,6 +117,10 @@ bullets:
   marker: "•"               # "" pour masquer les tirets
 contact:
   show_icons: true
+# CSS libre pour tout le reste (scopé .theme-yaml) :
+# custom_css: |
+#   .theme-yaml .site-header { border-bottom: 2px solid var(--accent); }
+#   .theme-yaml .sec-title { letter-spacing: .04em; }
 `;
 
 // ── Parsing YAML → config typée (tolérant : remplit les défauts) ──
@@ -196,6 +204,7 @@ export function parseTemplateConfig(yamlText: string | null | undefined): {
         typeof bullets.marker === "string" ? bullets.marker : d.bullets.marker,
     },
     contact: { showIcons: bool(contact.show_icons, d.contact.showIcons) },
+    customCss: typeof raw.custom_css === "string" ? raw.custom_css : "",
   };
 
   const name = typeof raw.name === "string" ? raw.name : null;
@@ -284,6 +293,9 @@ export function generateThemeCss(config: TemplateConfig): string {
       `@media screen and (max-width:760px){.theme-yaml .two-col{grid-template-columns:1fr;}}`,
     );
   }
+
+  // CSS libre (échappatoire) ajouté en dernier pour pouvoir tout surcharger.
+  if (c.customCss.trim()) rules.push(`/* custom_css */\n${c.customCss}`);
 
   return rules.join("\n");
 }

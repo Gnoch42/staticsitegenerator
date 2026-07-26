@@ -155,9 +155,11 @@ columns, reference CV wireframe), **academic**, **modern**, **slate**. Each temp
 renders both a web layout and a compact **print layout** for the PDF.
 Components: `generator/src/templates/*` · styles: `generator/public/themes/*.css`.
 
-### Custom templates (YAML)
-Beyond the 5 built-ins, you can create **YAML-configured templates** from the admin
-(Settings → *Custom templates*), no code needed. The YAML controls colors, fonts,
+### YAML templates
+**All templates — including the 5 built-ins — are YAML configs**, editable from the
+admin (Settings → *Custom templates*), no code needed. You can also create your own.
+A `custom_css` field (scoped to `.theme-yaml`) is the escape hatch for anything the
+options don't cover (gradient headers, numbered publications, etc.). The YAML controls colors, fonts,
 sizes, spacing, section-title style, bullets, contact icons, the profile photo, PDF
 page size — and the **multi-column layout** (which sections go in the sidebar, its
 side and width). Example:

@@ -1,4 +1,5 @@
 import type BetterSqlite3 from "better-sqlite3";
+import { BUILTIN_TEMPLATES } from "./builtinTemplates";
 
 // ─────────────────────────────────────────────────────────────
 //  Bootstrap idempotent : crée le schéma et sème les données de
@@ -131,12 +132,17 @@ function migrate(conn: BetterSqlite3.Database): void {
 
 // ── Seed : templates (toujours à jour) + contenu de départ (si vide) ──
 function seed(conn: BetterSqlite3.Database): void {
+  // Les 5 templates de base sont désormais du YAML. Sur conflit, on ne
+  // remplace le YAML QUE s'il est absent (COALESCE) : les modifications
+  // faites par l'utilisateur dans l'admin ne sont jamais écrasées au boot.
   const insertTemplate = conn.prepare(
-    `INSERT INTO templates (id, name, preview_url)
-     VALUES (@id, @name, @previewUrl)
-     ON CONFLICT(id) DO UPDATE SET name = excluded.name, preview_url = excluded.preview_url`,
+    `INSERT INTO templates (id, name, preview_url, yaml)
+     VALUES (@id, @name, @previewUrl, @yaml)
+     ON CONFLICT(id) DO UPDATE SET
+       preview_url = excluded.preview_url,
+       yaml = COALESCE(templates.yaml, excluded.yaml)`,
   );
-  for (const t of TEMPLATES) insertTemplate.run(t);
+  for (const t of BUILTIN_TEMPLATES) insertTemplate.run(t);
 
   // Le reste du seed n'a lieu qu'au tout premier démarrage.
   const siteExists = conn.prepare(`SELECT 1 FROM site WHERE id = 1`).get();
@@ -184,14 +190,6 @@ function seed(conn: BetterSqlite3.Database): void {
 }
 
 // ── Données de seed ──
-
-const TEMPLATES = [
-  { id: "minimal", name: "Minimaliste", previewUrl: "/themes/minimal.png" },
-  { id: "structured", name: "Structuré", previewUrl: "/themes/structured.png" },
-  { id: "academic", name: "Académique", previewUrl: "/themes/academic.png" },
-  { id: "modern", name: "Moderne", previewUrl: "/themes/modern.png" },
-  { id: "slate", name: "Slate", previewUrl: "/themes/slate.png" },
-];
 
 const DEFAULT_PAGES = [
   {
