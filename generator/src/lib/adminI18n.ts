@@ -171,6 +171,8 @@ export const ADMIN_STRINGS: Dict = {
   f_alt: { fr: "Texte alternatif (accessibilité)", en: "Alt text (accessibility)" },
   f_link: { fr: "Lien (optionnel)", en: "Link (optional)" },
   f_title: { fr: "Titre", en: "Title" },
+  f_hero_subtitle: { fr: "Sous-titre", en: "Subtitle" },
+  f_hero_button: { fr: "Texte du bouton", en: "Button label" },
   f_organization: { fr: "Organisation", en: "Organization" },
   f_location: { fr: "Lieu", en: "Location" },
   f_description: { fr: "Description", en: "Description" },

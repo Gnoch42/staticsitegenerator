@@ -31,9 +31,11 @@ export function SectionRenderer({
   const sorted = sortItems(section.type, visibleItems);
   section = { ...section, items: sorted };
 
+  // La bannière est auto-suffisante : pas de titre de section au-dessus.
+  const showTitle = section.type !== "hero" && hasContent(section.title ?? {});
   return (
     <section className={`sec sec-${section.type}`} data-type={section.type}>
-      {hasContent(section.title ?? {}) && (
+      {showTitle && (
         <h2 className="sec-title">
           <I18n field={section.title} langs={ctx.langs} />
         </h2>
@@ -73,9 +75,57 @@ function renderBody(section: SectionWithItems, ctx: Ctx) {
       return <LinkButtons section={section} ctx={ctx} />;
     case "html":
       return <HtmlBlock section={section} ctx={ctx} />;
+    case "hero":
+      return <HeroBlock section={section} ctx={ctx} />;
     default:
       return null;
   }
+}
+
+// ── Bannière (héro) : titre + sous-titre + image de fond + bouton ──
+function HeroBlock({ section, ctx }: { section: SectionWithItems; ctx: Ctx }) {
+  return (
+    <>
+      {section.items.map((item) => {
+        const d = item.data as { image?: string; button_url?: string };
+        const title = pickField(d, ctx.langs, "title");
+        const subtitle = pickField(d, ctx.langs, "subtitle");
+        const btn = pickField(d, ctx.langs, "button_label");
+        const style = d.image
+          ? { backgroundImage: `url(${d.image})` }
+          : undefined;
+        const href =
+          d.button_url && /^(https?:|mailto:|tel:|\/|#)/.test(d.button_url)
+            ? d.button_url
+            : d.button_url
+              ? `https://${d.button_url}`
+              : undefined;
+        return (
+          <section
+            key={item.id}
+            className={`hero${d.image ? " has-bg" : ""}`}
+            style={style}
+          >
+            {hasContent(title) && (
+              <h1 className="hero-title">
+                <I18n field={title} langs={ctx.langs} />
+              </h1>
+            )}
+            {hasContent(subtitle) && (
+              <p className="hero-subtitle">
+                <I18n field={subtitle} langs={ctx.langs} />
+              </p>
+            )}
+            {href && hasContent(btn) && (
+              <a className="hero-cta" href={href}>
+                <I18n field={btn} langs={ctx.langs} />
+              </a>
+            )}
+          </section>
+        );
+      })}
+    </>
+  );
 }
 
 // ── Bloc image (une ou plusieurs images pleine largeur) ──

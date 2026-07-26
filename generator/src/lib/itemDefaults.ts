@@ -54,6 +54,12 @@ export function defaultItemData(
       return { label: label(), url: "" };
     case "html":
       return perLang({ html: "" });
+    case "hero":
+      return {
+        image: "",
+        button_url: "",
+        ...perLang({ title: "", subtitle: "", button_label: "" }),
+      };
     case "publication_list":
       return {
         ...perLang({ title: "", venue: "", abstract: "" }),

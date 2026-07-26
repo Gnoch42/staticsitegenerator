@@ -25,13 +25,16 @@ export function AdminShell({
   children: React.ReactNode;
 }) {
   const t = (k: string) => tAdmin(k, lang);
+  // Aperçu : ouvre la page en cours d'édition (sinon la racine → accueil).
+  const PAGE_KEYS = ["home", "cv", "video", "research", "portfolio", "contact"];
+  const previewHref = PAGE_KEYS.includes(active) ? `/preview/${active}` : "/preview";
   return (
     <AdminI18nProvider lang={lang}>
       <div className="admin-shell">
         <div className="admin-topbar">
           <h1>{t("app_title")}</h1>
           <div className="toolbar">
-            <a className="btn btn-sm" href="/preview" target="_blank" rel="noreferrer">
+            <a className="btn btn-sm" href={previewHref} target="_blank" rel="noreferrer">
               {t("preview")} ↗
             </a>
             <PublishButton />

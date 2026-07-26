@@ -63,13 +63,14 @@ export type SectionType =
   // page contact
   | "contact_links"
   // page d'accueil (blocs flexibles)
+  | "hero"
   | "image"
   | "links"
   | "html";
 
 /** Sections autorisées par type de page (validation applicative). */
 export const SECTIONS_BY_PAGE: Record<PageType, SectionType[]> = {
-  home: ["custom", "image", "links", "video_embed", "portfolio_gallery", "html"],
+  home: ["hero", "custom", "image", "links", "video_embed", "portfolio_gallery", "html"],
   cv: [
     "contact",
     "summary",
@@ -149,6 +150,7 @@ export const SECTION_LABELS: Record<SectionType, Multilingual> = {
   publication_list: { fr: "Publications", en: "Publications" },
   portfolio_gallery: { fr: "Galerie", en: "Gallery" },
   contact_links: { fr: "Liens de contact", en: "Contact links" },
+  hero: { fr: "Bannière (héro)", en: "Hero banner" },
   image: { fr: "Image", en: "Image" },
   links: { fr: "Boutons / liens", en: "Buttons / links" },
   html: { fr: "HTML libre", en: "Custom HTML" },

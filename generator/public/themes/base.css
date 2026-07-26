@@ -127,6 +127,22 @@ img { max-width: 100%; height: auto; }
 
 /* ── Blocs de la page d'accueil ── */
 .page-home .sec { margin-bottom: 2.25rem; }
+.hero {
+  position: relative; border-radius: var(--radius); overflow: hidden;
+  padding: 4rem 2rem; margin-bottom: 1.5rem; text-align: center;
+  background: var(--surface); background-size: cover; background-position: center;
+}
+.hero.has-bg { color: #fff; }
+.hero.has-bg::before { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,.45); }
+.hero > * { position: relative; }
+.hero-title { font-size: 2.3rem; line-height: 1.15; margin: 0 0 .5rem; }
+.hero-subtitle { font-size: 1.15rem; margin: 0 0 1.4rem; opacity: .95; }
+.hero-cta {
+  display: inline-block; padding: .65rem 1.5rem; border-radius: var(--radius);
+  background: var(--accent); color: #fff; font-weight: 600; text-decoration: none;
+}
+.hero.has-bg .hero-cta { background: #fff; color: #111; }
+.hero-cta:hover { text-decoration: none; opacity: .92; }
 .image-block { margin: 0 0 1rem; }
 .block-img { width: 100%; border-radius: var(--radius); border: 1px solid var(--border); display: block; }
 .image-block .block-caption { color: var(--muted); font-size: .9rem; margin-top: .5rem; }

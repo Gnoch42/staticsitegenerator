@@ -149,6 +149,7 @@ export function ItemEditor({
   const isPortfolio = sectionType === "portfolio_gallery" || sectionType === "image";
   const isLinks = sectionType === "links";
   const isHtml = sectionType === "html";
+  const isHero = sectionType === "hero";
 
   return (
     <div className="item-block">
@@ -207,6 +208,37 @@ export function ItemEditor({
               </div>
             ))}
           </div>
+        </>
+      )}
+
+      {/* Bannière (héro) */}
+      {isHero && (
+        <>
+          <ImageUpload
+            value={flat("image")}
+            onChange={(url) => {
+              const next = { ...data, image: url };
+              commit(next);
+              persist(next);
+            }}
+          />
+          <div className="row">
+            <div style={{ flex: "2 1 300px" }}>
+              <label>{t("f_url")}</label>
+              <input value={flat("button_url")} onChange={(e) => setFlat("button_url", e.target.value)} onBlur={() => persist(data)} placeholder="https://… · /cv/" />
+            </div>
+          </div>
+          {langs.map((lang) => (
+            <div key={lang} className="lang-col" style={{ marginTop: ".5rem" }}>
+              <span className="lang-tag">{LANG_NAMES[lang] ?? lang}</span>
+              <label>{t("f_title")}</label>
+              <input value={nested(lang, "title")} onChange={(e) => setNested(lang, "title", e.target.value)} onBlur={() => persist(data)} />
+              <label>{t("f_hero_subtitle")}</label>
+              <input value={nested(lang, "subtitle")} onChange={(e) => setNested(lang, "subtitle", e.target.value)} onBlur={() => persist(data)} />
+              <label>{t("f_hero_button")}</label>
+              <input value={nested(lang, "button_label")} onChange={(e) => setNested(lang, "button_label", e.target.value)} onBlur={() => persist(data)} />
+            </div>
+          ))}
         </>
       )}
 
