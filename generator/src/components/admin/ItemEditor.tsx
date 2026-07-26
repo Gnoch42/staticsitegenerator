@@ -21,6 +21,7 @@ const FIELD_KEY: Record<string, string> = {
   body: "f_body",
   category: "f_category",
   value: "f_value",
+  level: "f_level",
   venue: "f_venue",
   abstract: "f_abstract",
 };

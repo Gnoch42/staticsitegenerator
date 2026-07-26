@@ -274,11 +274,20 @@ export function generateThemeCss(config: TemplateConfig): string {
   // Icônes de contact
   if (!c.contact.showIcons) rules.push(`.theme-yaml .contact-icon{display:none;}`);
 
-  // Mise en page deux colonnes
+  // Mise en page deux colonnes (la sidebar est toujours en 1er dans le DOM)
   if (c.layout.type === "two-column") {
+    const right = c.layout.sidebarSide === "right";
+    // ÉCRAN : grille. min-width:0 empêche les liens longs de déborder d'une
+    // colonne sur l'autre.
     rules.push(
       `.theme-yaml .two-col{display:grid;grid-template-columns:${cols};gap:${c.layout.columnGap};align-items:start;}`,
     );
+    rules.push(`.theme-yaml .col-sidebar,.theme-yaml .col-main{min-width:0;}`);
+    if (right) {
+      rules.push(
+        `.theme-yaml .col-sidebar{grid-column:2;}.theme-yaml .col-main{grid-column:1;grid-row:1;}`,
+      );
+    }
     if (c.colors.sidebarBg) {
       rules.push(
         `.theme-yaml .col-sidebar{background:${c.colors.sidebarBg};color:${c.colors.sidebarFg ?? "inherit"};padding:1.25rem;border-radius:var(--radius);}`,
@@ -289,6 +298,17 @@ export function generateThemeCss(config: TemplateConfig): string {
         );
       }
     }
+    // IMPRESSION : sidebar flottante → le contenu principal remplit toute la
+    // largeur une fois la sidebar terminée (pas de colonne blanche pages 2+).
+    const floatDir = right ? "right" : "left";
+    const marginSide = right ? "margin-left" : "margin-right";
+    rules.push(
+      `@media print{` +
+        `.theme-yaml .two-col{display:block;}` +
+        `.theme-yaml .col-sidebar{float:${floatDir};width:${c.layout.sidebarWidth};${marginSide}:${c.layout.columnGap};grid-column:auto;}` +
+        `.theme-yaml .col-main{grid-column:auto;padding:0;}` +
+        `}`,
+    );
     rules.push(
       `@media screen and (max-width:760px){.theme-yaml .two-col{grid-template-columns:1fr;}}`,
     );

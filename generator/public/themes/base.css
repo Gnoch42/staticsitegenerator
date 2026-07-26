@@ -29,6 +29,8 @@ body {
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 img { max-width: 100%; height: auto; }
+/* Les liens/URLs longs ne débordent pas (utile surtout en colonnes) */
+.site-root a, .contact-value, .pub-authors { overflow-wrap: anywhere; }
 
 /* ── Bascule de langue : n'affiche que la langue active ── */
 [data-lang] { display: none; }
@@ -106,6 +108,7 @@ img { max-width: 100%; height: auto; }
 .skills-list { list-style: none; margin: 0; padding: 0; }
 .skill-item { margin-bottom: .3rem; }
 .skill-cat { font-weight: 600; }
+.skill-level { color: var(--muted); }
 
 /* ── Loisirs (tags) ── */
 .tag-list { list-style: none; display: flex; flex-wrap: wrap; gap: .5rem; margin: 0; padding: 0; }

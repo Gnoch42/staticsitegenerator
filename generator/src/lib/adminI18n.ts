@@ -158,6 +158,7 @@ export const ADMIN_STRINGS: Dict = {
   f_heading: { fr: "Titre du bloc", en: "Block heading" },
   f_body: { fr: "Contenu", en: "Body" },
   f_category: { fr: "Catégorie", en: "Category" },
+  f_level: { fr: "Niveau", en: "Level" },
   f_venue: { fr: "Revue / lieu", en: "Venue" },
   f_abstract: { fr: "Résumé", en: "Abstract" },
   f_start: { fr: "Début (AAAA-MM)", en: "Start (YYYY-MM)" },

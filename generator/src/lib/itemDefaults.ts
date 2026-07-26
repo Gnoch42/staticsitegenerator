@@ -42,7 +42,7 @@ export function defaultItemData(
         year: "",
       };
     case "skills":
-      return perLang({ category: "", value: "" });
+      return perLang({ category: "", value: "", level: "" });
     case "hobbies":
       return perLang({ value: "" });
     case "video_embed":
@@ -70,7 +70,7 @@ export const MULTILINGUAL_FIELDS: Partial<Record<SectionType, string[]>> = {
   education: ["title", "organization", "location", "description"],
   formation: ["title", "organization", "description"],
   distinctions: ["title", "organization", "description"],
-  skills: ["category", "value"],
+  skills: ["category", "value", "level"],
   hobbies: ["value"],
   publication_list: ["title", "venue", "abstract"],
 };

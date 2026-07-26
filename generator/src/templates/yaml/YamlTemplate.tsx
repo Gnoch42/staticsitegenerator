@@ -52,11 +52,11 @@ export default function YamlTemplate({
         ))}
       </div>
     );
+    // Sidebar toujours en 1er dans le DOM (le côté visuel est géré en CSS) :
+    // requis pour que le flottant d'impression remplisse la largeur.
     body = (
       <main className="page two-col">
-        {cfg.layout.sidebarSide === "left"
-          ? [sidebarCol, mainCol]
-          : [mainCol, sidebarCol]}
+        {[sidebarCol, mainCol]}
       </main>
     );
   } else {

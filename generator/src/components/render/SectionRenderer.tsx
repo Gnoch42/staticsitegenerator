@@ -226,6 +226,7 @@ function SkillsList({ section, ctx }: { section: SectionWithItems; ctx: Ctx }) {
         const d = item.data as Record<string, unknown>;
         const category = pickField(d, ctx.langs, "category");
         const value = pickField(d, ctx.langs, "value");
+        const level = pickField(d, ctx.langs, "level");
         return (
           <li key={item.id} className="skill-item">
             {hasContent(category) && (
@@ -237,6 +238,12 @@ function SkillsList({ section, ctx }: { section: SectionWithItems; ctx: Ctx }) {
             <span className="skill-val">
               <I18n field={value} langs={ctx.langs} />
             </span>
+            {hasContent(level) && (
+              <span className="skill-level">
+                {" · "}
+                <I18n field={level} langs={ctx.langs} />
+              </span>
+            )}
           </li>
         );
       })}
