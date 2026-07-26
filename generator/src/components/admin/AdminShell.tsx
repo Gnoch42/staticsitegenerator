@@ -11,6 +11,7 @@ const TABS = [
   { href: "/admin/research", key: "research", label: "tab_research" },
   { href: "/admin/portfolio", key: "portfolio", label: "tab_portfolio" },
   { href: "/admin/contact", key: "contact", label: "tab_contact" },
+  { href: "/admin/content", key: "content", label: "tab_content" },
 ];
 
 export function AdminShell({

@@ -15,6 +15,9 @@ import {
   itemProfiles,
 } from "@/db/schema";
 import { STARTER_YAML, parseTemplateConfig } from "@/lib/templateConfig";
+import { parseContentYaml } from "@/lib/contentYaml";
+import { applyContent } from "@/lib/contentImport";
+import { slugify } from "@/lib/slug";
 import {
   verifyPassword,
   createSession,
@@ -103,18 +106,6 @@ export async function setAdminLanguage(adminLanguage: string) {
 }
 
 // ── Profils de CV ──
-function slugify(s: string): string {
-  return (
-    s
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[̀-ͯ]/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .slice(0, 40) || "profil"
-  );
-}
-
 export async function createProfile(name: string) {
   await guard();
   const clean = name.trim() || "Nouveau profil";
@@ -206,6 +197,24 @@ export async function deleteCustomTemplate(id: string) {
     .run();
   db.delete(templates).where(eq(templates.id, id)).run();
   revalidatePath("/admin", "layout");
+}
+
+// ── Contenu en YAML (aller-retour avec la base) ──
+export async function importContentYaml(
+  yaml: string,
+): Promise<{ ok: boolean; error?: string }> {
+  await guard();
+  const { content, error } = parseContentYaml(yaml);
+  if (error || !content) return { ok: false, error: error ?? "YAML invalide" };
+
+  try {
+    applyContent(content);
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Échec de l'import" };
+  }
+
+  revalidatePath("/admin", "layout");
+  return { ok: true };
 }
 
 // ── Sections ──

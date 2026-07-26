@@ -189,6 +189,15 @@ Le YAML est converti en variables/règles CSS (scopées `.theme-yaml`) + une mis
 page, appliquées au rendu web ET au PDF. Config/générateur :
 [`generator/src/lib/templateConfig.ts`](generator/src/lib/templateConfig.ts).
 
+## Contenu en YAML
+En plus de l'éditeur graphique, tout le **contenu** du site (sections → items →
+textes, toutes les pages) peut être édité en YAML depuis l'admin (onglet Contenu).
+La base reste la source de vérité : l'éditeur YAML charge le contenu actuel, et
+l'enregistrement le réécrit de façon transactionnelle — l'éditeur graphique reste
+synchronisé. Les items référencent les profils par nom (créés au besoin). Seules les
+pages présentes dans le YAML sont remplacées.
+Sérialiseur/parseur : [`generator/src/lib/contentYaml.ts`](generator/src/lib/contentYaml.ts).
+
 ## Portfolio & images téléversées
 Les images téléversées sont stockées dans le volume (`<DATA_DIR>/uploads`,
 surchargeable via `UPLOADS_DIR`), servies à `/uploads/<fichier>` pendant l'édition,

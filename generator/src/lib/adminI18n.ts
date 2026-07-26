@@ -27,6 +27,21 @@ export const ADMIN_STRINGS: Dict = {
   tab_research: { fr: "Publications", en: "Publications" },
   tab_portfolio: { fr: "Portfolio", en: "Portfolio" },
   tab_contact: { fr: "Contact", en: "Contact" },
+  tab_content: { fr: "Contenu (YAML)", en: "Content (YAML)" },
+
+  // Content YAML editor
+  content_title: { fr: "Contenu du site en YAML", en: "Site content as YAML" },
+  content_hint: {
+    fr: "Édition alternative du contenu (sections → items → textes). Enregistrer réécrit le contenu de la base ; l'interface graphique reste synchronisée.",
+    en: "Alternative content editing (sections → items → texts). Saving rewrites the database content; the graphical editor stays in sync.",
+  },
+  content_import: { fr: "Enregistrer le YAML", en: "Save YAML" },
+  content_reload: { fr: "Recharger depuis la base", en: "Reload from database" },
+  content_confirm: {
+    fr: "Remplacer le contenu du site par ce YAML ?",
+    en: "Replace the site content with this YAML?",
+  },
+  content_saved: { fr: "Contenu enregistré ✓", en: "Content saved ✓" },
 
   // Login
   login_title: { fr: "Connexion", en: "Sign in" },

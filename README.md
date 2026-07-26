@@ -188,6 +188,14 @@ The YAML is parsed into CSS variables + rules (scoped to `.theme-yaml`) and a la
 applied to both the web render and the PDF. Config/generator:
 [`generator/src/lib/templateConfig.ts`](generator/src/lib/templateConfig.ts).
 
+## Content as YAML
+Besides the graphical editor, the whole site **content** (sections → items → texts,
+all pages) can be edited as YAML from the admin (Content tab). The database stays the
+single source of truth: the YAML editor loads the current content, and saving rewrites
+it transactionally — the graphical editor stays in sync. Items reference profiles by
+name (auto-created if new). Only the pages present in the YAML are replaced.
+Serializer/parser: [`generator/src/lib/contentYaml.ts`](generator/src/lib/contentYaml.ts).
+
 ## Portfolio & uploaded images
 Uploaded images are stored in the volume (`<DATA_DIR>/uploads`, overridable via
 `UPLOADS_DIR`), served at `/uploads/<file>` while editing, then **copied into the
