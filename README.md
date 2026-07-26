@@ -155,7 +155,9 @@ seed & migration: [`generator/src/db/init.ts`](generator/src/db/init.ts).
 ## Templates
 Two built-in templates — **structured** (two columns, reference CV wireframe) and
 **academic** (serif) — plus any you create. All consume the **same** data model and
-render both a web layout and a compact **print layout** for the PDF.
+render both a web layout and a compact **print layout** for the PDF. In print, a
+two-column template becomes a **top band** (sidebar sections) + a **full-width body**,
+so every printed page is a single full-width column with minimal empty space.
 
 ### YAML templates
 **All templates — including the built-ins — are YAML configs**, editable from the

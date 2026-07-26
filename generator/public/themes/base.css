@@ -109,6 +109,7 @@ img { max-width: 100%; height: auto; }
 .skill-item { margin-bottom: .3rem; }
 .skill-cat { font-weight: 600; }
 .skill-level { color: var(--muted); }
+.skill-level::before { content: "·"; padding: 0 .4rem; }
 
 /* ── Loisirs (tags) ── */
 .tag-list { list-style: none; display: flex; flex-wrap: wrap; gap: .5rem; margin: 0; padding: 0; }

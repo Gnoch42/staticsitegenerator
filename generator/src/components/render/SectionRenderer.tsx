@@ -373,7 +373,6 @@ function SkillsList({ section, ctx }: { section: SectionWithItems; ctx: Ctx }) {
             </span>
             {hasContent(level) && (
               <span className="skill-level">
-                {" · "}
                 <I18n field={level} langs={ctx.langs} />
               </span>
             )}

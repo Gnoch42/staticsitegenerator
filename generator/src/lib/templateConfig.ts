@@ -55,6 +55,8 @@ export interface TemplateConfig {
     skillCategories: boolean;
     skillLevels: boolean;
     publicationAbstracts: boolean;
+    /** true = niveau de compétence sur sa propre ligne (sous la compétence). */
+    skillLevelOwnLine: boolean;
   };
   /** CSS libre ajouté à la fin (scopé `.theme-yaml`) — échappatoire pour
    *  tout ce que les options ne couvrent pas (en-têtes, compteurs, etc.). */
@@ -104,6 +106,7 @@ export const DEFAULT_CONFIG: TemplateConfig = {
     skillCategories: true,
     skillLevels: true,
     publicationAbstracts: true,
+    skillLevelOwnLine: false,
   },
   customCss: "",
 };
@@ -146,6 +149,7 @@ display:                    # afficher/masquer des éléments (true = affiché)
   descriptions: true
   skill_categories: true
   skill_levels: true
+  skill_level_own_line: false   # true = niveau sous la compétence
   publication_abstracts: true
 # CSS libre pour tout le reste (scopé .theme-yaml) :
 # custom_css: |
@@ -247,6 +251,10 @@ export function parseTemplateConfig(yamlText: string | null | undefined): {
         display.publication_abstracts,
         d.display.publicationAbstracts,
       ),
+      skillLevelOwnLine: bool(
+        display.skill_level_own_line,
+        d.display.skillLevelOwnLine,
+      ),
     },
     customCss: typeof raw.custom_css === "string" ? raw.custom_css : "",
   };
@@ -330,6 +338,12 @@ export function generateThemeCss(config: TemplateConfig): string {
   hide(c.display.skillCategories, ".skill-cat");
   hide(c.display.skillLevels, ".skill-level");
   hide(c.display.publicationAbstracts, ".pub-abstract");
+  // Niveau de compétence sur sa propre ligne (sous la compétence).
+  if (c.display.skillLevelOwnLine) {
+    rules.push(
+      `.theme-yaml .skill-level{display:block;}.theme-yaml .skill-level::before{content:none;}`,
+    );
+  }
 
   // Mise en page deux colonnes (la sidebar est toujours en 1er dans le DOM)
   if (c.layout.type === "two-column") {
@@ -355,17 +369,8 @@ export function generateThemeCss(config: TemplateConfig): string {
         );
       }
     }
-    // IMPRESSION : sidebar flottante → le contenu principal remplit toute la
-    // largeur une fois la sidebar terminée (pas de colonne blanche pages 2+).
-    const floatDir = right ? "right" : "left";
-    const marginSide = right ? "margin-left" : "margin-right";
-    rules.push(
-      `@media print{` +
-        `.theme-yaml .two-col{display:block;}` +
-        `.theme-yaml .col-sidebar{float:${floatDir};width:${c.layout.sidebarWidth};${marginSide}:${c.layout.columnGap};grid-column:auto;}` +
-        `.theme-yaml .col-main{grid-column:auto;padding:0;}` +
-        `}`,
-    );
+    // NB : la mise en page D'IMPRESSION des deux colonnes (bandeau en haut +
+    // corps pleine largeur) est gérée globalement dans print.css.
     rules.push(
       `@media screen and (max-width:760px){.theme-yaml .two-col{grid-template-columns:1fr;}}`,
     );
