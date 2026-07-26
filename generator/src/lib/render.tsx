@@ -1,9 +1,9 @@
 import "server-only";
 import type { ReactElement } from "react";
 import type { FullSite, PageWithSections } from "./queries";
-import { getTemplate } from "@/templates";
 import { buildNav } from "@/components/render/SiteHeader";
 import { isInProfile } from "@/lib/types";
+import { templateComponent, templateConfig, themeAssetName } from "./theme";
 import { LANG_TOGGLE_JS } from "./clientScript";
 import { renderElementToString } from "./renderToString";
 
@@ -28,7 +28,8 @@ export function renderPageElement(
   page: PageWithSections,
   opts: RenderOptions,
 ): ReactElement {
-  const { component: Template } = getTemplate(full.site.templateId);
+  const Template = templateComponent(full.template);
+  const config = templateConfig(full.template);
   const langs = opts.onlyLang ? [opts.onlyLang] : full.site.languages;
   const activeLang = opts.activeLang ?? full.site.defaultLanguage;
   const nav = buildNav(full.pages, page.type, opts.linkFor);
@@ -46,6 +47,7 @@ export function renderPageElement(
       ownerName={full.site.ownerName}
       photoUrl={photoVisible ? full.site.photoUrl : null}
       profileId={profileId}
+      config={config}
       showPdf={opts.showPdf}
       pdfHref={opts.pdfHref}
     />
@@ -58,7 +60,7 @@ export async function renderPageDocument(
   page: PageWithSections,
   opts: RenderOptions,
 ): Promise<string> {
-  const { css } = getTemplate(full.site.templateId);
+  const css = themeAssetName(full.template);
   const activeLang = opts.activeLang ?? full.site.defaultLanguage;
   const body = await renderElementToString(renderPageElement(full, page, opts));
   const includeToggle = !opts.onlyLang;

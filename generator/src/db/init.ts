@@ -14,7 +14,8 @@ const SCHEMA_SQL = `
 CREATE TABLE IF NOT EXISTS templates (
   id          TEXT PRIMARY KEY,
   name        TEXT NOT NULL,
-  preview_url TEXT
+  preview_url TEXT,
+  yaml        TEXT
 );
 
 CREATE TABLE IF NOT EXISTS site (
@@ -96,6 +97,7 @@ function migrate(conn: BetterSqlite3.Database): void {
     }
   };
 
+  addColumn("templates", "yaml", "TEXT");
   addColumn("site", "owner_name", "TEXT");
   addColumn("site", "photo_url", "TEXT");
   addColumn("site", "photo_profile_ids", "TEXT");

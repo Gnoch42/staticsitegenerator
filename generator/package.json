@@ -23,7 +23,8 @@
     "playwright": "1.49.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

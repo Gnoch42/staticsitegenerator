@@ -99,6 +99,13 @@ label { display: block; font-size: .8rem; color: var(--admin-muted); margin: .5r
 }
 .profile-chip.on { background: var(--admin-accent); border-color: var(--admin-accent); color: #fff; }
 
+/* Éditeur YAML de template */
+.yaml-editor {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .82rem; line-height: 1.45; min-height: 22rem; white-space: pre;
+  tab-size: 2;
+}
+
 .notice { padding: .6rem .8rem; border-radius: 8px; font-size: .85rem; margin-bottom: 1rem; }
 .notice-ok { background: #ecfdf5; color: #065f46; }
 .notice-info { background: #eff6ff; color: #1e40af; }

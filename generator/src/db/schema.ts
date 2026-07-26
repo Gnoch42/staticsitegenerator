@@ -9,9 +9,11 @@ import type {
 
 // ── templates : données de seed, non éditables par l'utilisateur ──
 export const templates = sqliteTable("templates", {
-  id: text("id").primaryKey(), // "minimal" | "structured" | "academic"
+  id: text("id").primaryKey(), // built-in id, ou "custom-…" pour les templates YAML
   name: text("name").notNull(),
   previewUrl: text("preview_url"),
+  // Config YAML pour les templates personnalisés ; null = template intégré (composant).
+  yaml: text("yaml"),
 });
 
 // ── site : une seule ligne (id = 1) ──

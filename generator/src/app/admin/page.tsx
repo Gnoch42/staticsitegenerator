@@ -10,6 +10,7 @@ import { PhotoField } from "@/components/admin/PhotoField";
 import { AdminLanguageSelect } from "@/components/admin/AdminLanguageSelect";
 import { PageToggles } from "@/components/admin/PageToggles";
 import { ProfilesManager } from "@/components/admin/ProfilesManager";
+import { TemplateEditor } from "@/components/admin/TemplateEditor";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +50,17 @@ export default async function AdminHome() {
         </div>
         <p className="muted">{at("template_hint")}</p>
         <TemplateSelector templates={full.templates} current={full.site.templateId} />
+      </div>
+
+      <div className="card">
+        <div className="card-head">
+          <span className="card-title">{at("yaml_title")}</span>
+        </div>
+        <TemplateEditor
+          templates={full.templates
+            .filter((tpl) => tpl.yaml)
+            .map((tpl) => ({ id: tpl.id, name: tpl.name, yaml: tpl.yaml! }))}
+        />
       </div>
 
       <div className="card">

@@ -3,12 +3,11 @@ import { promises as fs } from "node:fs";
 import { join, extname } from "node:path";
 import { chromium } from "playwright";
 import { getFullSite } from "./queries";
-import { getTemplate } from "@/templates";
 import { renderPageElement } from "./render";
 import { renderElementToString } from "./renderToString";
+import { baseCssContent, printCssContent, themeCssContent, templateConfig } from "./theme";
+import { pdfPageOptions } from "./templateConfig";
 import { uploadsDir, safeFileName } from "./paths";
-
-const THEMES_DIR = join(process.cwd(), "public", "themes");
 
 const IMG_MIME: Record<string, string> = {
   ".jpg": "image/jpeg",
@@ -60,13 +59,13 @@ export async function renderCvPdf(
   if (!cv) throw new Error("Page CV introuvable");
 
   const onlyLang = lang ?? full.site.defaultLanguage;
-  const { css } = getTemplate(full.site.templateId);
 
   const [baseCss, themeCss, printCss] = await Promise.all([
-    fs.readFile(join(THEMES_DIR, "base.css"), "utf8"),
-    fs.readFile(join(THEMES_DIR, css), "utf8"),
-    fs.readFile(join(THEMES_DIR, "print.css"), "utf8"),
+    baseCssContent(),
+    themeCssContent(full.template),
+    printCssContent(),
   ]);
+  const config = templateConfig(full.template);
 
   const body = await renderElementToString(
     renderPageElement(full, cv, {
@@ -85,15 +84,25 @@ export async function renderCvPdf(
 <style>${baseCss}\n${themeCss}\n${printCss}</style>
 </head><body>${inlinedBody}</body></html>`;
 
+  // Format/marges : depuis la config YAML si template personnalisé, sinon A4.
+  const pageOpts = config
+    ? pdfPageOptions(config)
+    : { format: "A4" as const, margin: "16mm" };
+
   const browser = await chromium.launch({ args: ["--no-sandbox"] });
   try {
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "networkidle" });
     await page.emulateMedia({ media: "print" });
     const pdf = await page.pdf({
-      format: "A4",
+      format: pageOpts.format,
       printBackground: true,
-      margin: { top: "16mm", bottom: "16mm", left: "14mm", right: "14mm" },
+      margin: {
+        top: pageOpts.margin,
+        bottom: pageOpts.margin,
+        left: pageOpts.margin,
+        right: pageOpts.margin,
+      },
     });
     return new Uint8Array(pdf);
   } finally {

@@ -2,16 +2,19 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { randomBytes } from "node:crypto";
 import { eq, sql, and } from "drizzle-orm";
 import { db } from "@/db/client";
 import {
   site,
+  templates,
   pages,
   sections,
   items,
   profiles,
   itemProfiles,
 } from "@/db/schema";
+import { STARTER_YAML, parseTemplateConfig } from "@/lib/templateConfig";
 import {
   verifyPassword,
   createSession,
@@ -171,6 +174,37 @@ export async function setItemProfiles(itemId: number, profileIds: number[]) {
 export async function setPageEnabled(pageId: number, enabled: boolean) {
   await guard();
   db.update(pages).set({ enabled }).where(eq(pages.id, pageId)).run();
+  revalidatePath("/admin", "layout");
+}
+
+// ── Templates YAML personnalisés ──
+export async function createCustomTemplate(name: string) {
+  await guard();
+  const clean = name.trim() || "Nouveau template";
+  const id = "custom-" + randomBytes(4).toString("hex");
+  db.insert(templates).values({ id, name: clean, yaml: STARTER_YAML }).run();
+  revalidatePath("/admin", "layout");
+  return { id, yaml: STARTER_YAML };
+}
+
+export async function updateCustomTemplateYaml(id: string, yaml: string) {
+  await guard();
+  // Le nom du template suit le champ `name:` du YAML s'il est présent.
+  const { name } = parseTemplateConfig(yaml);
+  const patch: { yaml: string; name?: string } = { yaml };
+  if (name && name.trim()) patch.name = name.trim();
+  db.update(templates).set(patch).where(eq(templates.id, id)).run();
+  revalidatePath("/admin", "layout");
+}
+
+export async function deleteCustomTemplate(id: string) {
+  await guard();
+  // Si c'était le template actif, revenir à "structured".
+  db.update(site)
+    .set({ templateId: "structured" })
+    .where(and(eq(site.id, 1), eq(site.templateId, id)))
+    .run();
+  db.delete(templates).where(eq(templates.id, id)).run();
   revalidatePath("/admin", "layout");
 }
 

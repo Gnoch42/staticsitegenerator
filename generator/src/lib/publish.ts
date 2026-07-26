@@ -5,8 +5,8 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db/client";
 import { site } from "@/db/schema";
 import { getFullSite } from "./queries";
-import { getTemplate } from "@/templates";
 import { renderPageDocument } from "./render";
+import { themeAssetName, themeCssContent } from "./theme";
 import { uploadsDir } from "./paths";
 
 const OUT_DIR = process.env.SITE_OUTPUT_DIR ?? "./data/site";
@@ -31,11 +31,16 @@ export async function publishSite(): Promise<PublishResult> {
   const assetsDir = join(OUT_DIR, "assets");
   await fs.mkdir(assetsDir, { recursive: true });
 
-  // Copie des feuilles de style (base + thème actif + print).
-  const { css } = getTemplate(full.site.templateId);
-  for (const file of ["base.css", "print.css", css]) {
+  // Feuilles de style : base + print (fichiers), puis la couche thème
+  // (fichier intégré copié, ou CSS généré depuis le YAML).
+  for (const file of ["base.css", "print.css"]) {
     await fs.copyFile(join(THEMES_DIR, file), join(assetsDir, file));
   }
+  await fs.writeFile(
+    join(assetsDir, themeAssetName(full.template)),
+    await themeCssContent(full.template),
+    "utf8",
+  );
 
   // Copie des images uploadées (portfolio) vers /data/site/uploads,
   // pour que Caddy les serve directement à /uploads/<fichier>.

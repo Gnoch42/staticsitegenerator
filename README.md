@@ -155,6 +155,37 @@ columns, reference CV wireframe), **academic**, **modern**, **slate**. Each temp
 renders both a web layout and a compact **print layout** for the PDF.
 Components: `generator/src/templates/*` · styles: `generator/public/themes/*.css`.
 
+### Custom templates (YAML)
+Beyond the 5 built-ins, you can create **YAML-configured templates** from the admin
+(Settings → *Custom templates*), no code needed. The YAML controls colors, fonts,
+sizes, spacing, section-title style, bullets, contact icons, the profile photo, PDF
+page size — and the **multi-column layout** (which sections go in the sidebar, its
+side and width). Example:
+
+```yaml
+name: Corporate
+layout:
+  type: two-column
+  sidebar: [contact, skills, distinctions]
+  sidebar_side: right
+  sidebar_width: 30%
+colors:
+  accent: "#004f90"
+  sidebar_bg: "#0f172a"
+  sidebar_fg: "#e2e8f0"
+typography:
+  alignment: justified
+  section_titles: { style: rule, uppercase: false }
+header: { photo_shape: square }
+bullets: { marker: "▹" }
+contact: { show_icons: false }
+page: { size: us-letter }
+```
+
+The YAML is parsed into CSS variables + rules (scoped to `.theme-yaml`) and a layout,
+applied to both the web render and the PDF. Config/generator:
+[`generator/src/lib/templateConfig.ts`](generator/src/lib/templateConfig.ts).
+
 ## Portfolio & uploaded images
 Uploaded images are stored in the volume (`<DATA_DIR>/uploads`, overridable via
 `UPLOADS_DIR`), served at `/uploads/<file>` while editing, then **copied into the

@@ -59,6 +59,20 @@ export const ADMIN_STRINGS: Dict = {
     en: "Optional — shown at the top of the CV.",
   },
 
+  // Custom YAML templates
+  yaml_title: { fr: "Templates personnalisés (YAML)", en: "Custom templates (YAML)" },
+  yaml_hint: {
+    fr: "Créez des templates configurés en YAML (style + colonnes). Sélectionnez-en un ci-dessous comme template actif pour l'utiliser.",
+    en: "Create templates configured in YAML (style + columns). Select one below as the active template to use it.",
+  },
+  yaml_none: { fr: "Aucun template personnalisé.", en: "No custom templates yet." },
+  yaml_new_ph: { fr: "Nom du template", en: "Template name" },
+  yaml_create: { fr: "Créer un template", en: "Create template" },
+  yaml_preview_note: {
+    fr: "Sélectionnez-le comme template actif, puis Aperçu.",
+    en: "Select it as active template, then Preview.",
+  },
+
   // Template
   template_title: { fr: "Template", en: "Template" },
   template_hint: {

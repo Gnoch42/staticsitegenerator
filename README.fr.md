@@ -156,6 +156,37 @@ colonnes, wireframe de référence), **academic**, **modern**, **slate**. Chaque
 template rend un layout web ET un layout **imprimé** compact pour le PDF.
 Composants : `generator/src/templates/*` · styles : `generator/public/themes/*.css`.
 
+### Templates personnalisés (YAML)
+En plus des 5 templates intégrés, tu peux créer des **templates configurés en YAML**
+depuis l'admin (Réglages → *Templates personnalisés*), sans code. Le YAML contrôle
+couleurs, polices, tailles, espacements, style des titres de section, puces, icônes
+de contact, photo, taille de page PDF — et la **mise en page multi-colonnes** (quelles
+sections vont en sidebar, son côté et sa largeur). Exemple :
+
+```yaml
+name: Corporate
+layout:
+  type: two-column
+  sidebar: [contact, skills, distinctions]
+  sidebar_side: right
+  sidebar_width: 30%
+colors:
+  accent: "#004f90"
+  sidebar_bg: "#0f172a"
+  sidebar_fg: "#e2e8f0"
+typography:
+  alignment: justified
+  section_titles: { style: rule, uppercase: false }
+header: { photo_shape: square }
+bullets: { marker: "▹" }
+contact: { show_icons: false }
+page: { size: us-letter }
+```
+
+Le YAML est converti en variables/règles CSS (scopées `.theme-yaml`) + une mise en
+page, appliquées au rendu web ET au PDF. Config/générateur :
+[`generator/src/lib/templateConfig.ts`](generator/src/lib/templateConfig.ts).
+
 ## Portfolio & images téléversées
 Les images téléversées sont stockées dans le volume (`<DATA_DIR>/uploads`,
 surchargeable via `UPLOADS_DIR`), servies à `/uploads/<fichier>` pendant l'édition,
