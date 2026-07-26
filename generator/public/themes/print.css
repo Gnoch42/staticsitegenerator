@@ -35,43 +35,4 @@
   .video-link,
   .ti-desc a, .block-text a, .pub-item a, .pub-authors,
   .contact-item a { overflow-wrap: anywhere; word-break: break-word; }
-
-  /* ── Modèles à colonnes en IMPRESSION : bandeau en haut + corps pleine
-     largeur. Chaque page est une seule colonne pleine largeur (jamais de
-     colonne qui s'arrête au milieu d'une page), et l'espace vide est minimisé. */
-  .theme-yaml .two-col { display: block !important; }
-  .theme-yaml .col-main { grid-column: auto !important; padding: 0 !important; }
-
-  .theme-yaml .col-sidebar {
-    float: none !important;
-    grid-column: auto !important;
-    width: auto !important;
-    background: transparent !important;
-    color: inherit !important;
-    padding: 0 0 3mm !important;
-    margin: 0 0 4mm !important;
-    border-radius: 0 !important;
-    border-bottom: 1px solid #ccc;
-    /* sections courtes disposées en bandeau horizontal */
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 8mm;
-    align-items: flex-start;
-  }
-  /* le nom occupe sa propre ligne en tête du bandeau */
-  .theme-yaml .col-sidebar > .cv-identity {
-    flex: 1 1 100%;
-    flex-direction: row;
-    align-items: center;
-    text-align: left;
-    margin-bottom: 3mm;
-  }
-  .theme-yaml .col-sidebar > .cv-identity .cv-photo { width: 60px; height: 60px; }
-  .theme-yaml .col-sidebar > .sec { flex: 1 1 200px; margin-bottom: 0; }
-  /* couleurs de sidebar (thème sombre) neutralisées sur fond blanc */
-  .theme-yaml .col-sidebar .sec-title,
-  .theme-yaml .col-sidebar a,
-  .theme-yaml .col-sidebar .contact-label,
-  .theme-yaml .col-sidebar .muted,
-  .theme-yaml .col-sidebar .tag { color: inherit !important; opacity: 1 !important; }
 }

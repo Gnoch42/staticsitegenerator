@@ -369,8 +369,18 @@ export function generateThemeCss(config: TemplateConfig): string {
         );
       }
     }
-    // NB : la mise en page D'IMPRESSION des deux colonnes (bandeau en haut +
-    // corps pleine largeur) est gérée globalement dans print.css.
+    // IMPRESSION : sidebar flottante (colonne à gauche) ; le contenu principal
+    // remplit toute la largeur une fois la sidebar terminée (pas de colonne
+    // blanche réservée sur les pages suivantes).
+    const floatDir = right ? "right" : "left";
+    const marginSide = right ? "margin-left" : "margin-right";
+    rules.push(
+      `@media print{` +
+        `.theme-yaml .two-col{display:block;}` +
+        `.theme-yaml .col-sidebar{float:${floatDir};width:${c.layout.sidebarWidth};${marginSide}:${c.layout.columnGap};grid-column:auto;}` +
+        `.theme-yaml .col-main{grid-column:auto;padding:0;}` +
+        `}`,
+    );
     rules.push(
       `@media screen and (max-width:760px){.theme-yaml .two-col{grid-template-columns:1fr;}}`,
     );
