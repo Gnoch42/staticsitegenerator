@@ -2,11 +2,10 @@
    La taille/marge de page est pilotée par Playwright (config du template) ;
    le layout deux-colonnes en impression est généré par template (flottant).
    Ici : règles communes de coupure de page et anti-débordement. */
-/* Les marges du PDF sont pilotées par Playwright (config du template) ;
-   on n'ajoute pas de marge @page pour ne pas les cumuler. */
-@page {
-  margin: 0;
-}
+/* Les marges du PDF sont pilotées par Playwright (option `margin` de page.pdf,
+   issue de la config du template). On NE met PAS de `@page { margin }` ici : une
+   règle @page écrase l'option Playwright (→ marge nulle, contenu collé aux bords)
+   et sert aussi de repère au panneau latéral en position:fixed. */
 
 @media print {
   /* Rien de la nav / des outils du site dans le PDF. */
@@ -25,7 +24,13 @@
      (expérience, publication, image) ne se coupe pas en deux. */
   .sec { break-inside: auto; margin-bottom: 4mm; }
   .sec-title { break-after: avoid; }
-  .timeline-item, .pub-item, .gallery-item { break-inside: avoid; }
+  /* Les expériences PEUVENT se couper d'une page à l'autre (pour remplir le
+     bas de page), mais l'en-tête reste solidaire du début de la description
+     (pas de titre orphelin en bas de page). Publications et images ne se
+     coupent pas. */
+  .timeline-item { break-inside: auto; }
+  .ti-head { break-inside: avoid; break-after: avoid; }
+  .pub-item, .gallery-item { break-inside: avoid; }
 
   .cv-identity { margin-bottom: 8mm; }
   .cv-photo { width: 90px; height: 90px; }

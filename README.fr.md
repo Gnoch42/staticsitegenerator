@@ -158,13 +158,14 @@ Deux templates fournis — **structured** (deux colonnes, wireframe de référen
 **academic** (sérif) — plus ceux que tu crées. Tous consomment le **même** modèle de
 données et rendent un layout web ET un layout **imprimé** compact pour le PDF. À
 l'impression, un template à colonnes rend la sidebar comme un **panneau coloré pleine
-hauteur** qui descend jusqu'en bas de chaque page pleine (le fond est peint via un
-dégradé, qui se répète bien sur les sauts de page), le contenu principal restant dans
-sa colonne de droite. Sur la dernière page (partiellement remplie), le panneau
-s'ajuste à la hauteur du contenu. (Si la sidebar est *plus longue* que la colonne
-principale de plus d'une page, le panneau ne couvre que les pages occupées par le
-contenu principal — garde un parcours au moins aussi long que la sidebar pour un
-panneau plein sur toutes les pages.)
+hauteur** sur chaque page : le panneau est peint par un pseudo-élément
+`position: fixed`, que Chromium répète à pleine hauteur sur chaque page imprimée
+quel que soit l'endroit des sauts de page, en respectant la marge de page. Le contenu
+principal reste dans sa colonne de droite, et les expériences peuvent se couper sur un
+saut de page pour que le bas de page se remplisse au lieu de rester vide (l'en-tête
+reste solidaire du texte suivant ; publications et images ne se coupent jamais). Sur
+la dernière page, le panneau reste présent pleine hauteur même si son texte s'est
+terminé plus tôt (look « sidebar de design » classique).
 
 ### Templates YAML
 **Tous les templates — y compris les intégrés — sont des configs YAML**, éditables
