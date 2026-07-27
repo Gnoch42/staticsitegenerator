@@ -8,16 +8,71 @@ import type { Multilingual } from "./types";
 //  entrées reste géré par l'app (renderers structurés).
 // ─────────────────────────────────────────────────────────────
 
+/** Éléments de rendu stylables individuellement (police, taille, etc.). */
+export type ElementKey =
+  | "name"
+  | "section_title"
+  | "job_title"
+  | "organization"
+  | "dates"
+  | "summary"
+  | "description"
+  | "skill_category"
+  | "skill_level"
+  | "contact"
+  | "tag"
+  | "publication_title"
+  | "publication_authors"
+  | "publication_venue"
+  | "publication_abstract";
+
+/** Style typographique d'un élément (toutes les propriétés optionnelles). */
+export interface ElementStyle {
+  font?: string; // famille de police
+  size?: string; // ex. 1.1rem, 11pt
+  weight?: string; // 400 | 600 | 700 | bold…
+  style?: "normal" | "italic";
+  color?: string; // hex, ou jeton fg | muted | accent | border
+  uppercase?: boolean;
+  letterSpacing?: string;
+}
+
+/** Classes CSS ciblées par chaque élément (scopées `.theme-yaml`). */
+export const ELEMENT_SELECTORS: Record<ElementKey, string[]> = {
+  name: [".cv-name"],
+  section_title: [".sec-title"],
+  job_title: [".ti-title"],
+  organization: [".ti-meta"],
+  dates: [".ti-dates", ".pub-year"],
+  summary: [".block-text", ".block-heading"],
+  description: [".ti-desc"],
+  skill_category: [".skill-cat"],
+  skill_level: [".skill-level"],
+  contact: [".contact-item"],
+  tag: [".tag"],
+  publication_title: [".pub-title"],
+  publication_authors: [".pub-authors"],
+  publication_venue: [".pub-venue"],
+  publication_abstract: [".pub-abstract"],
+};
+
 export interface TemplateConfig {
   layout: {
     type: "single-column" | "two-column";
     sidebar: string[]; // types de sections en colonne latérale
     sidebarSide: "left" | "right";
     sidebarWidth: string;
-    columnGap: string;
     maxWidth: string;
   };
-  page: { size: "a4" | "us-letter"; margin: string };
+  page: { size: "a4" | "us-letter" };
+  /** Buffers / espacements (écran ET PDF). */
+  spacing: {
+    pageMargin: string; // marge autour de la page (PDF)
+    columnGap: string; // entre la sidebar et la colonne principale
+    sidebarPadding: string; // marge intérieure du panneau latéral
+    sectionGap: string; // entre les sections
+    itemGap: string; // entre les items (expériences, publications…)
+  };
   colors: {
     bg: string;
     body: string;
@@ -32,12 +87,11 @@ export interface TemplateConfig {
     fontBody: string;
     fontHeadings: string;
     baseSize: string;
-    nameSize: string;
-    sectionTitleSize: string;
     lineHeight: string;
     alignment: "left" | "justified";
     sectionTitleStyle: "plain" | "underline" | "rule" | "small-caps";
-    sectionTitleUppercase: boolean;
+    /** Style par élément ; complète les défauts de base.css. */
+    elements: Record<ElementKey, ElementStyle>;
   };
   header: {
     photo: boolean;
@@ -75,10 +129,16 @@ export const DEFAULT_CONFIG: TemplateConfig = {
     sidebar: ["contact", "skills", "distinctions", "hobbies"],
     sidebarSide: "left",
     sidebarWidth: "34%",
-    columnGap: "2.5rem",
     maxWidth: "900px",
   },
-  page: { size: "a4", margin: "16mm" },
+  page: { size: "a4" },
+  spacing: {
+    pageMargin: "16mm",
+    columnGap: "2.5rem",
+    sidebarPadding: "1.25rem",
+    sectionGap: "2rem",
+    itemGap: "1.25rem",
+  },
   colors: {
     bg: "#ffffff",
     body: "#1a1a1a",
@@ -93,12 +153,10 @@ export const DEFAULT_CONFIG: TemplateConfig = {
     fontBody: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
     fontHeadings: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
     baseSize: "16px",
-    nameSize: "1.7rem",
-    sectionTitleSize: "1.1rem",
     lineHeight: "1.55",
     alignment: "left",
     sectionTitleStyle: "underline",
-    sectionTitleUppercase: true,
+    elements: emptyElements(),
   },
   header: { photo: true, photoSize: "110px", photoShape: "circle" },
   bullets: { marker: "-" },
@@ -118,29 +176,51 @@ export const DEFAULT_CONFIG: TemplateConfig = {
   customCss: "",
 };
 
-/** YAML de départ proposé à la création d'un template. */
+/** YAML de départ proposé à la création d'un template (modèle complet). */
 export const STARTER_YAML = `name: Mon template
 layout:
   type: two-column          # single-column | two-column
   sidebar: [contact, skills, distinctions, hobbies]
   sidebar_side: left        # left | right
-  sidebar_width: 34%        # largeur de la colonne latérale (% conseillé ; un px
-                            # paraît plus large en A4 qu'à l'écran)
+  sidebar_width: 32%        # % conseillé (constant écran/impression ; un px paraît large en A4)
   max_width: 1000px
 page:
   size: us-letter           # a4 | us-letter
-  margin: 16mm
+spacing:                    # buffers (écran ET PDF)
+  page_margin: 16mm         # marge autour de la page (PDF)
+  column_gap: 6%            # entre la colonne latérale et la principale
+  sidebar_padding: 1.25rem  # marge intérieure du panneau latéral
+  section_gap: 1.5rem       # entre les sections
+  item_gap: 1rem            # entre les items (expériences, publications…)
 colors:
   accent: "#004f90"
   # sidebar_bg: "#0f172a"
   # sidebar_fg: "#e2e8f0"
 typography:
   font_body: "Inter, system-ui, sans-serif"
+  font_headings: "Inter, system-ui, sans-serif"
   base_size: 16px
+  line_height: 1.55
   alignment: left           # left | justified
-  section_titles:
-    style: rule             # plain | underline | rule | small-caps
-    uppercase: true
+  # Style par élément. Propriétés (toutes optionnelles) :
+  #   font, size, weight (400/600/700), style (normal|italic),
+  #   color (hex ou jeton fg|muted|accent|border), uppercase, letter_spacing
+  elements:
+    name:          { size: 1.7rem, weight: 700 }
+    section_title: { size: 1.1rem, uppercase: true, color: accent, style: rule }  # style: plain|underline|rule|small-caps
+    job_title:     { size: 1rem, weight: 600 }
+    organization:  { size: .9rem, color: muted }
+    dates:         { size: .85rem, color: muted }
+    summary:       { size: 1rem }        # résumé / blocs de texte
+    description:   { size: 1rem }        # descriptions d'expériences
+    skill_category:{ weight: 600 }
+    skill_level:   { color: muted }
+    contact:       { size: 1rem }
+    tag:           { size: .85rem }
+    publication_title:    { size: 1rem, weight: 600 }
+    publication_authors:  { size: .9rem }
+    publication_venue:    { size: .9rem, color: muted, style: italic }
+    publication_abstract: { size: .95rem }
 header:
   photo: true
   photo_size: 120px
@@ -166,7 +246,6 @@ labels:                     # libellés du rendu (par langue)
 # CSS libre pour tout le reste (scopé .theme-yaml) :
 # custom_css: |
 #   .theme-yaml .site-header { border-bottom: 2px solid var(--accent); }
-#   .theme-yaml .sec-title { letter-spacing: .04em; }
 `;
 
 // ── Parsing YAML → config typée (tolérant : remplit les défauts) ──
@@ -192,13 +271,28 @@ export function parseTemplateConfig(yamlText: string | null | undefined): {
 
   const layout = obj(raw.layout);
   const page = obj(raw.page);
+  const spacing = obj(raw.spacing);
   const colors = obj(raw.colors);
   const typo = obj(raw.typography);
   const sectionTitles = obj(typo.section_titles);
+  const elemRaw = obj(typo.elements);
   const header = obj(raw.header);
   const bullets = obj(raw.bullets);
   const contact = obj(raw.contact);
   const display = obj(raw.display);
+
+  // Style par élément + rétrocompatibilité (anciennes clés name_size /
+  // section_title_size / section_titles.uppercase repliées dans `elements`).
+  const elements = emptyElements();
+  for (const key of Object.keys(ELEMENT_SELECTORS) as ElementKey[]) {
+    elements[key] = elementStyle(elemRaw[key]);
+  }
+  if (!elements.name.size && typo.name_size)
+    elements.name.size = String(typo.name_size);
+  if (!elements.section_title.size && typo.section_title_size)
+    elements.section_title.size = String(typo.section_title_size);
+  if (elements.section_title.uppercase === undefined && sectionTitles.uppercase !== undefined)
+    elements.section_title.uppercase = bool(sectionTitles.uppercase, true);
 
   const config: TemplateConfig = {
     layout: {
@@ -208,12 +302,18 @@ export function parseTemplateConfig(yamlText: string | null | undefined): {
         : d.layout.sidebar,
       sidebarSide: enumVal(layout.sidebar_side, ["left", "right"], d.layout.sidebarSide),
       sidebarWidth: str(layout.sidebar_width, d.layout.sidebarWidth),
-      columnGap: str(layout.column_gap, d.layout.columnGap),
       maxWidth: str(layout.max_width, d.layout.maxWidth),
     },
     page: {
       size: enumVal(page.size, ["a4", "us-letter"], d.page.size),
-      margin: str(page.margin, d.page.margin),
+    },
+    spacing: {
+      // Rétrocompat : page.margin et layout.column_gap continuent de marcher.
+      pageMargin: str(spacing.page_margin, str(page.margin, d.spacing.pageMargin)),
+      columnGap: str(spacing.column_gap, str(layout.column_gap, d.spacing.columnGap)),
+      sidebarPadding: str(spacing.sidebar_padding, d.spacing.sidebarPadding),
+      sectionGap: str(spacing.section_gap, d.spacing.sectionGap),
+      itemGap: str(spacing.item_gap, d.spacing.itemGap),
     },
     colors: {
       bg: str(colors.bg, d.colors.bg),
@@ -229,16 +329,16 @@ export function parseTemplateConfig(yamlText: string | null | undefined): {
       fontBody: str(typo.font_body, d.typography.fontBody),
       fontHeadings: str(typo.font_headings, str(typo.font_body, d.typography.fontHeadings)),
       baseSize: str(typo.base_size, d.typography.baseSize),
-      nameSize: str(typo.name_size, d.typography.nameSize),
-      sectionTitleSize: str(typo.section_title_size, d.typography.sectionTitleSize),
       lineHeight: str(typo.line_height, d.typography.lineHeight),
       alignment: enumVal(typo.alignment, ["left", "justified"], d.typography.alignment),
       sectionTitleStyle: enumVal(
-        sectionTitles.style,
+        // `style` accepté sous elements.section_title OU l'ancien section_titles.
+        (elemRaw.section_title as Record<string, unknown> | undefined)?.style ??
+          sectionTitles.style,
         ["plain", "underline", "rule", "small-caps"],
         d.typography.sectionTitleStyle,
       ),
-      sectionTitleUppercase: bool(sectionTitles.uppercase, d.typography.sectionTitleUppercase),
+      elements,
     },
     header: {
       photo: bool(header.photo, d.header.photo),
@@ -302,23 +402,39 @@ export function generateThemeCss(config: TemplateConfig): string {
   font-size:${c.typography.baseSize}; line-height:${c.typography.lineHeight};
 }`);
 
-  rules.push(`.theme-yaml .cv-name{font-size:${c.typography.nameSize};}`);
   rules.push(
     `.theme-yaml .cv-photo{width:${c.header.photoSize};height:${c.header.photoSize};border-radius:${shape};}`,
   );
   if (!c.header.photo) rules.push(`.theme-yaml .cv-photo{display:none;}`);
 
-  // Titres de section
-  const st: string[] = [`font-size:${c.typography.sectionTitleSize};`];
-  st.push(c.typography.sectionTitleUppercase ? "text-transform:uppercase;" : "text-transform:none;");
+  // ── Espacements / buffers (écran ET PDF) ──
+  rules.push(`.theme-yaml .sec{margin-bottom:${c.spacing.sectionGap};}`);
+  rules.push(
+    `.theme-yaml .timeline-item,.theme-yaml .pub-item{margin-bottom:${c.spacing.itemGap};}`,
+  );
+
+  // ── Titres de section : décoration (style) + typo (elements.section_title) ──
+  const smallCaps = c.typography.sectionTitleStyle === "small-caps";
+  const st: string[] = [];
   if (c.typography.sectionTitleStyle === "plain") st.push("border:none;");
   if (c.typography.sectionTitleStyle === "underline")
     st.push("border-bottom:1px solid var(--border);");
   if (c.typography.sectionTitleStyle === "rule")
     st.push("border:none;border-top:3px solid var(--accent);padding-top:.35rem;");
-  if (c.typography.sectionTitleStyle === "small-caps")
+  if (smallCaps)
     st.push("border:none;font-variant:small-caps;text-transform:none;letter-spacing:0;");
+  // Propriétés typographiques de l'élément (uppercase ignoré si small-caps).
+  st.push(elementDecls(c.typography.elements.section_title, { skipUppercase: smallCaps }));
   rules.push(`.theme-yaml .sec-title{${st.join("")}}`);
+
+  // ── Typographie par élément (name, job_title, dates, body, etc.) ──
+  for (const key of Object.keys(ELEMENT_SELECTORS) as ElementKey[]) {
+    if (key === "section_title") continue; // déjà géré ci-dessus
+    const decls = elementDecls(c.typography.elements[key]);
+    if (!decls) continue;
+    const sel = ELEMENT_SELECTORS[key].map((s) => `.theme-yaml ${s}`).join(",");
+    rules.push(`${sel}{${decls}}`);
+  }
 
   // Alignement du texte
   if (c.typography.alignment === "justified") {
@@ -364,7 +480,7 @@ export function generateThemeCss(config: TemplateConfig): string {
     // ÉCRAN : grille. min-width:0 empêche les liens longs de déborder d'une
     // colonne sur l'autre.
     rules.push(
-      `.theme-yaml .two-col{display:grid;grid-template-columns:${cols};gap:${c.layout.columnGap};align-items:start;}`,
+      `.theme-yaml .two-col{display:grid;grid-template-columns:${cols};gap:${c.spacing.columnGap};align-items:start;}`,
     );
     rules.push(`.theme-yaml .col-sidebar,.theme-yaml .col-main{min-width:0;}`);
     if (right) {
@@ -374,7 +490,7 @@ export function generateThemeCss(config: TemplateConfig): string {
     }
     if (c.colors.sidebarBg) {
       rules.push(
-        `.theme-yaml .col-sidebar{background:${c.colors.sidebarBg};color:${c.colors.sidebarFg ?? "inherit"};padding:1.25rem;border-radius:var(--radius);}`,
+        `.theme-yaml .col-sidebar{background:${c.colors.sidebarBg};color:${c.colors.sidebarFg ?? "inherit"};padding:${c.spacing.sidebarPadding};border-radius:var(--radius);}`,
       );
       if (c.colors.sidebarFg) {
         rules.push(
@@ -400,7 +516,7 @@ export function generateThemeCss(config: TemplateConfig): string {
           : "") +
         `.theme-yaml .two-col{display:block;}` +
         `.theme-yaml .col-sidebar{float:${floatDir};width:${c.layout.sidebarWidth};grid-column:auto;border-radius:0;background:transparent;position:relative;}` +
-        `.theme-yaml .col-main{grid-column:auto;${mainMargin}:calc(${c.layout.sidebarWidth} + ${c.layout.columnGap});}` +
+        `.theme-yaml .col-main{grid-column:auto;${mainMargin}:calc(${c.layout.sidebarWidth} + ${c.spacing.columnGap});}` +
         `}`,
     );
     rules.push(
@@ -421,7 +537,7 @@ export function pdfPageOptions(config: TemplateConfig): {
 } {
   return {
     format: config.page.size === "us-letter" ? "Letter" : "A4",
-    margin: config.page.margin,
+    margin: config.spacing.pageMargin,
   };
 }
 
@@ -441,6 +557,51 @@ function enumVal<T extends string>(v: unknown, allowed: T[], def: T): T {
 function clone<T>(v: T): T {
   return JSON.parse(JSON.stringify(v));
 }
+/** Map d'éléments vides (toutes les clés présentes, styles vides). */
+function emptyElements(): Record<ElementKey, ElementStyle> {
+  const out = {} as Record<ElementKey, ElementStyle>;
+  for (const key of Object.keys(ELEMENT_SELECTORS) as ElementKey[]) out[key] = {};
+  return out;
+}
+/** Parse un style d'élément depuis le YAML (tolérant). */
+function elementStyle(v: unknown): ElementStyle {
+  const o = obj(v);
+  const s: ElementStyle = {};
+  if (typeof o.font === "string" && o.font.trim()) s.font = o.font;
+  if (typeof o.size === "string" && o.size.trim()) s.size = o.size;
+  if (o.weight !== undefined && o.weight !== null && String(o.weight).trim())
+    s.weight = String(o.weight);
+  if (o.style === "italic" || o.style === "normal") s.style = o.style;
+  if (typeof o.color === "string" && o.color.trim()) s.color = o.color;
+  if (typeof o.uppercase === "boolean") s.uppercase = o.uppercase;
+  if (typeof o.letter_spacing === "string" && o.letter_spacing.trim())
+    s.letterSpacing = o.letter_spacing;
+  return s;
+}
+/** Jeton de couleur (fg/muted/accent/border) → variable CSS, sinon valeur brute. */
+function resolveColor(c: string): string {
+  const tokens: Record<string, string> = {
+    fg: "var(--fg)",
+    muted: "var(--muted)",
+    accent: "var(--accent)",
+    border: "var(--border)",
+  };
+  return tokens[c] ?? c;
+}
+/** Déclarations CSS d'un style d'élément (chaîne, vide si aucune propriété). */
+function elementDecls(s: ElementStyle, opts?: { skipUppercase?: boolean }): string {
+  const d: string[] = [];
+  if (s.font) d.push(`font-family:${s.font};`);
+  if (s.size) d.push(`font-size:${s.size};`);
+  if (s.weight) d.push(`font-weight:${s.weight};`);
+  if (s.style) d.push(`font-style:${s.style};`);
+  if (s.color) d.push(`color:${resolveColor(s.color)};`);
+  if (s.uppercase !== undefined && !opts?.skipUppercase)
+    d.push(`text-transform:${s.uppercase ? "uppercase" : "none"};`);
+  if (s.letterSpacing) d.push(`letter-spacing:${s.letterSpacing};`);
+  return d.join("");
+}
+
 /** { fr: "…", en: "…" } → Multilingual (chaînes seulement, non vides). */
 function multilingual(v: unknown): Multilingual {
   const out: Multilingual = {};

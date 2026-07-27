@@ -127,6 +127,12 @@ export const ADMIN_STRINGS: Dict = {
     fr: "Sélectionnez-le comme template actif, puis Aperçu.",
     en: "Select it as active template, then Preview.",
   },
+  yaml_reset: { fr: "Réinitialiser au modèle par défaut", en: "Reset to default model" },
+  yaml_reset_confirm: {
+    fr: "Réinitialiser ce template au modèle par défaut complet ? Vos modifications de CE template seront perdues.",
+    en: "Reset this template to the full default model? Your changes to THIS template will be lost.",
+  },
+  yaml_builtin_tag: { fr: "intégré", en: "built-in" },
 
   // Template
   template_title: { fr: "Template", en: "Template" },

@@ -15,6 +15,7 @@ import { YamlSurface } from "@/components/admin/YamlSurface";
 import { buildSettingsYaml } from "@/lib/settingsYaml";
 import { buildSiteYaml } from "@/lib/siteYaml";
 import { importSettingsYaml, importSiteYaml } from "@/app/admin/actions";
+import { BUILTIN_TEMPLATES } from "@/db/builtinTemplates";
 
 export const dynamic = "force-dynamic";
 
@@ -66,6 +67,7 @@ export default async function AdminHome() {
           templates={full.templates
             .filter((tpl) => tpl.yaml)
             .map((tpl) => ({ id: tpl.id, name: tpl.name, yaml: tpl.yaml! }))}
+          builtinIds={BUILTIN_TEMPLATES.map((t) => t.id)}
         />
       </div>
 

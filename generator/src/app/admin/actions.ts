@@ -15,6 +15,7 @@ import {
   itemProfiles,
 } from "@/db/schema";
 import { STARTER_YAML, parseTemplateConfig } from "@/lib/templateConfig";
+import { BUILTIN_TEMPLATES } from "@/db/builtinTemplates";
 import { parseContentYaml, buildContentYaml } from "@/lib/contentYaml";
 import { applyContent } from "@/lib/contentImport";
 import { parseLocaleYaml } from "@/lib/locale";
@@ -191,6 +192,18 @@ export async function updateCustomTemplateYaml(id: string, yaml: string) {
   if (name && name.trim()) patch.name = name.trim();
   db.update(templates).set(patch).where(eq(templates.id, id)).run();
   revalidatePath("/admin", "layout");
+}
+
+/** Réinitialise un template intégré à son modèle par défaut (YAML complet). */
+export async function resetTemplateToBuiltin(
+  id: string,
+): Promise<{ yaml: string } | { error: string }> {
+  await guard();
+  const b = BUILTIN_TEMPLATES.find((t) => t.id === id);
+  if (!b || !b.yaml) return { error: "Template intégré introuvable." };
+  db.update(templates).set({ yaml: b.yaml, name: b.name }).where(eq(templates.id, id)).run();
+  revalidatePath("/admin", "layout");
+  return { yaml: b.yaml };
 }
 
 export async function deleteCustomTemplate(id: string) {

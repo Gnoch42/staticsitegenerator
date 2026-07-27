@@ -5,6 +5,7 @@ import {
   createCustomTemplate,
   updateCustomTemplateYaml,
   deleteCustomTemplate,
+  resetTemplateToBuiltin,
 } from "@/app/admin/actions";
 import { parseTemplateConfig } from "@/lib/templateConfig";
 import { useAdminT } from "./AdminI18n";
@@ -15,7 +16,13 @@ interface CustomTpl {
   yaml: string;
 }
 
-export function TemplateEditor({ templates }: { templates: CustomTpl[] }) {
+export function TemplateEditor({
+  templates,
+  builtinIds = [],
+}: {
+  templates: CustomTpl[];
+  builtinIds?: string[];
+}) {
   const t = useAdminT();
   const [rows, setRows] = useState<CustomTpl[]>(templates);
   const [newName, setNewName] = useState("");
@@ -46,7 +53,12 @@ export function TemplateEditor({ templates }: { templates: CustomTpl[] }) {
       {rows.length === 0 && <p className="muted">{t("yaml_none")}</p>}
 
       {rows.map((tpl) => (
-        <RowEditor key={tpl.id} tpl={tpl} onRemove={() => remove(tpl.id)} />
+        <RowEditor
+          key={tpl.id}
+          tpl={tpl}
+          isBuiltin={builtinIds.includes(tpl.id)}
+          onRemove={() => remove(tpl.id)}
+        />
       ))}
 
       <div className="row" style={{ alignItems: "center", marginTop: ".6rem" }}>
@@ -66,7 +78,15 @@ export function TemplateEditor({ templates }: { templates: CustomTpl[] }) {
   );
 }
 
-function RowEditor({ tpl, onRemove }: { tpl: CustomTpl; onRemove: () => void }) {
+function RowEditor({
+  tpl,
+  isBuiltin,
+  onRemove,
+}: {
+  tpl: CustomTpl;
+  isBuiltin: boolean;
+  onRemove: () => void;
+}) {
   const t = useAdminT();
   const [open, setOpen] = useState(false);
   const [yaml, setYaml] = useState(tpl.yaml);
@@ -90,6 +110,18 @@ function RowEditor({ tpl, onRemove }: { tpl: CustomTpl; onRemove: () => void }) 
     }
   }
 
+  async function reset() {
+    if (!confirm(t("yaml_reset_confirm"))) return;
+    const res = await resetTemplateToBuiltin(tpl.id);
+    if ("yaml" in res) {
+      setYaml(res.yaml);
+      const parsed = parseTemplateConfig(res.yaml).name;
+      if (parsed) setName(parsed);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    }
+  }
+
   return (
     <div className="card" style={{ marginBottom: ".6rem" }}>
       <div className="card-head">
@@ -98,11 +130,16 @@ function RowEditor({ tpl, onRemove }: { tpl: CustomTpl; onRemove: () => void }) 
             {open ? "▾" : "▸"}
           </button>
           <strong>{name}</strong>
-          <span className="muted">({tpl.id})</span>
+          <span className="muted">
+            ({tpl.id}
+            {isBuiltin ? ` · ${t("yaml_builtin_tag")}` : ""})
+          </span>
         </div>
-        <button className="btn btn-sm btn-danger" onClick={onRemove}>
-          {t("delete")}
-        </button>
+        {!isBuiltin && (
+          <button className="btn btn-sm btn-danger" onClick={onRemove}>
+            {t("delete")}
+          </button>
+        )}
       </div>
       {open && (
         <div style={{ marginTop: ".6rem" }}>
@@ -120,6 +157,11 @@ function RowEditor({ tpl, onRemove }: { tpl: CustomTpl; onRemove: () => void }) 
             <button className="btn-primary" onClick={save} disabled={pending || !!error}>
               {pending ? "…" : t("save")}
             </button>
+            {isBuiltin && (
+              <button className="btn" onClick={reset}>
+                {t("yaml_reset")}
+              </button>
+            )}
             {saved && <span className="muted">{t("saved")}</span>}
             <span className="spacer" />
             <span className="muted">{t("yaml_preview_note")}</span>

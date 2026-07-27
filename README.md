@@ -194,10 +194,21 @@ contact: { show_icons: false }
 page: { size: us-letter }
 ```
 
+A `spacing:` block controls the buffers (screen **and** PDF): `page_margin`,
+`column_gap` (sidebar ↔ main), `sidebar_padding`, `section_gap` (between sections),
+`item_gap` (between experiences/publications). A `typography.elements:` map gives
+per-element control — for each of `name`, `section_title`, `job_title`,
+`organization`, `dates`, `summary`, `description`, `skill_category`, `skill_level`,
+`contact`, `tag`, `publication_title`, `publication_authors`, `publication_venue`,
+`publication_abstract` you can set `font`, `size`, `weight`, `style` (normal/italic),
+`color` (hex or token `fg`/`muted`/`accent`/`border`), `uppercase`, `letter_spacing`.
+
 A `display:` block toggles elements per template (e.g. `contact_labels: false` to
 show only the icon + value, or hide `dates`, `section_titles`, `descriptions`,
 `skill_categories`…). The YAML is parsed into CSS variables + rules (scoped to
-`.theme-yaml`) and a layout, applied to both the web render and the PDF. Config/generator:
+`.theme-yaml`) and a layout, applied to both the web render and the PDF. Built-in
+templates ship the full model explicitly; a **"Reset to default model"** button
+rewrites a built-in's YAML to that model. Config/generator:
 [`generator/src/lib/templateConfig.ts`](generator/src/lib/templateConfig.ts).
 
 ## Everything as YAML

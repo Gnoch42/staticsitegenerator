@@ -196,10 +196,22 @@ contact: { show_icons: false }
 page: { size: us-letter }
 ```
 
+Un bloc `spacing:` pilote les buffers (écran **et** PDF) : `page_margin`,
+`column_gap` (sidebar ↔ principale), `sidebar_padding`, `section_gap` (entre sections),
+`item_gap` (entre expériences/publications). Une carte `typography.elements:` donne un
+contrôle par élément — pour chacun de `name`, `section_title`, `job_title`,
+`organization`, `dates`, `summary`, `description`, `skill_category`, `skill_level`,
+`contact`, `tag`, `publication_title`, `publication_authors`, `publication_venue`,
+`publication_abstract`, tu peux régler `font`, `size`, `weight`, `style` (normal/italic),
+`color` (hex ou jeton `fg`/`muted`/`accent`/`border`), `uppercase`, `letter_spacing`.
+
 Un bloc `display:` affiche/masque des éléments par template (ex. `contact_labels: false`
 pour ne garder que l'icône + la valeur, ou masquer `dates`, `section_titles`,
 `descriptions`, `skill_categories`…). Le YAML est converti en variables/règles CSS
-(scopées `.theme-yaml`) + une mise en page, appliquées au rendu web ET au PDF. Config/générateur :
+(scopées `.theme-yaml`) + une mise en page, appliquées au rendu web ET au PDF. Les
+templates intégrés embarquent le modèle complet explicitement ; un bouton
+**« Réinitialiser au modèle par défaut »** réécrit le YAML d'un template intégré vers
+ce modèle. Config/générateur :
 [`generator/src/lib/templateConfig.ts`](generator/src/lib/templateConfig.ts).
 
 ## Tout en YAML
