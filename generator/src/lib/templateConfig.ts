@@ -124,7 +124,8 @@ layout:
   type: two-column          # single-column | two-column
   sidebar: [contact, skills, distinctions, hobbies]
   sidebar_side: left        # left | right
-  sidebar_width: 34%
+  sidebar_width: 34%        # largeur de la colonne latérale (% conseillé ; un px
+                            # paraît plus large en A4 qu'à l'écran)
   max_width: 1000px
 page:
   size: us-letter           # a4 | us-letter

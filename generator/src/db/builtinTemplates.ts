@@ -15,7 +15,8 @@ layout:
   type: two-column
   sidebar: [contact, skills, distinctions, hobbies]
   sidebar_side: left
-  sidebar_width: 280px
+  sidebar_width: 30%        # largeur de la colonne latérale — un % reste constant
+                            # à l'écran ET à l'impression (un px devient large en A4)
   max_width: 1000px
 colors:
   accent: "#1d4ed8"
